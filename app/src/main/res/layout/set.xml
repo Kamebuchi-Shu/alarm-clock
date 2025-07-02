@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.ogatafutoshikawa.alarm_clock.Main_Activity">
+
+    <!-- 時間表示テキスト -->
+    <TextView
+        android:id="@+id/time_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/time"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="40dp"/>
+
+    <!-- 時間設定ボタン -->
+    <Button
+        android:id="@+id/time"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="@string/Space"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time_label"
+        android:layout_marginTop="20dp"/>
+
+    <!-- 場所表示テキスト -->
+    <TextView
+        android:id="@+id/place_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/place"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time"
+        android:layout_marginTop="40dp"/>
+
+    <!-- 県選択ボタン -->
+    <Button
+        android:id="@+id/prefecture"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:text="@string/Space"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/place_label"
+        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"/>
+
+    <!-- 市選択ボタン -->
+    <Button
+        android:id="@+id/city"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:text="@string/Space"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/place_label"
+        android:layout_marginRight="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="20dp"/>
+
+    <!-- 音声表示テキスト -->
+    <TextView
+        android:id="@+id/audio_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="アラーム音"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/prefecture"
+        android:layout_marginTop="40dp"/>
+
+    <!-- 音声選択ボタン -->
+    <Button
+        android:id="@+id/audio_select"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="音声を選択"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/audio_label"
+        android:layout_marginTop="20dp"/>
+
+    <!-- 選択した音声名表示 -->
+    <TextView
+        android:id="@+id/audio_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="デフォルト音声"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/audio_select"
+        android:layout_marginTop="10dp"/>
+
+    <!-- 確認ボタン -->
+    <Button
+        android:id="@+id/cheack"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:text="@string/OK"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/audio_name"
+        android:layout_marginTop="40dp"/>
+
+</android.support.constraint.ConstraintLayout>
