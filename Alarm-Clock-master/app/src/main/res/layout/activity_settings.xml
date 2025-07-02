@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".SettingsActivity">
+
+    <TextView
+        android:id="@+id/title_wake_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="起床希望時間"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edit_wake_up_hour"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:hint="時"
+        android:inputType="number"
+        android:maxLength="2"
+        android:textAlignment="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_wake_up" />
+
+    <TextView
+        android:id="@+id/colon1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=":"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/edit_wake_up_hour"
+        app:layout_constraintStart_toEndOf="@id/edit_wake_up_hour"
+        app:layout_constraintTop_toTopOf="@id/edit_wake_up_hour" />
+
+    <EditText
+        android:id="@+id/edit_wake_up_minute"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:hint="分"
+        android:inputType="number"
+        android:maxLength="2"
+        android:textAlignment="center"
+        app:layout_constraintStart_toEndOf="@id/colon1"
+        app:layout_constraintTop_toTopOf="@id/edit_wake_up_hour" />
+
+
+    <TextView
+        android:id="@+id/title_late_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="遅刻ギリギリ時間"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_wake_up_hour" />
+
+    <EditText
+        android:id="@+id/edit_late_hour"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:hint="時"
+        android:inputType="number"
+        android:maxLength="2"
+        android:textAlignment="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_late_time" />
+
+    <TextView
+        android:id="@+id/colon2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=":"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/edit_late_hour"
+        app:layout_constraintStart_toEndOf="@id/edit_late_hour"
+        app:layout_constraintTop_toTopOf="@id/edit_late_hour" />
+
+    <EditText
+        android:id="@+id/edit_late_minute"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:hint="分"
+        android:inputType="number"
+        android:maxLength="2"
+        android:textAlignment="center"
+        app:layout_constraintStart_toEndOf="@id/colon2"
+        app:layout_constraintTop_toTopOf="@id/edit_late_hour" />
+
+
+    <TextView
+        android:id="@+id/title_snooze"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="二度寝許容時間（分）"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_late_hour" />
+
+    <EditText
+        android:id="@+id/edit_snooze_minute"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:hint="例: 20"
+        android:inputType="number"
+        android:maxLength="3"
+        android:textAlignment="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_snooze" />
+
+    <Button
+        android:id="@+id/button_save"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="設定を保存"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_snooze_minute" />
+
+</android.support.constraint.ConstraintLayout>

@@ -1,119 +1,116 @@
 package com.example.ogatafutoshikawa.alarm_clock;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
+import android.text.TextUtils;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TimePicker;
+import android.widget.EditText;
+import android.widget.Toast;
 
-import java.util.Calendar;
+public class Alarm_Activity extends AppCompatActivity {
 
-public class Alarm_Activity extends AppCompatActivity
-                    implements View.OnClickListener{
+    // SharedPreferencesで設定を保存するためのキー
+    public static final String PREFS_NAME = "FakeTimePrefs";
+    public static final String KEY_WAKE_HOUR = "wake_hour";
+    public static final String KEY_WAKE_MINUTE = "wake_minute";
+    public static final String KEY_LATE_HOUR = "late_hour";
+    public static final String KEY_LATE_MINUTE = "late_minute";
+    public static final String KEY_SNOOZE = "snooze";
 
+    private EditText wakeUpHourEditText;
+    private EditText wakeUpMinuteEditText;
+    private EditText lateHourEditText;
+    private EditText lateMinuteEditText;
+    private EditText snoozeMinuteEditText;
 
-    private InputMethodManager mInputMethodManager;
-    private RelativeLayout mLayout;
-    PendingIntent mAlarmSender;
-    String place;
-    int hour;
-    int min;
-
-    /**
-     * Alarm_Activityの画面を構成するメソッド
-     * @param saveInstanceState
-     */
     @Override
-    public void onCreate(Bundle saveInstanceState){
-        super.onCreate(saveInstanceState);
-        setContentView(R.layout.alarm);
-        
-        mLayout = findViewById(R.id.mainLayout);
-        //キーボード表示を制御するためのオブジェクト
-        mInputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // このActivityが使用するレイアウトファイルを "activity_settings.xml" に変更
+        setContentView(R.layout.activity_settings);
 
-        //buttonを取得
-        Button btnSet = findViewById(R.id.set);
-        Button btnCancel = findViewById(R.id.cancel);
-        TimePicker tPicker = findViewById(R.id.timePicker);
+        // レイアウトファイル上のUIコンポーネントを紐付け
+        wakeUpHourEditText = findViewById(R.id.edit_wake_up_hour);
+        wakeUpMinuteEditText = findViewById(R.id.edit_wake_up_minute);
+        lateHourEditText = findViewById(R.id.edit_late_hour);
+        lateMinuteEditText = findViewById(R.id.edit_late_minute);
+        snoozeMinuteEditText = findViewById(R.id.edit_snooze_minute);
 
-        btnSet.setOnClickListener(this);
-        btnCancel.setOnClickListener(this);
-        tPicker.setIs24HourView(true);
-    }
-
-    /**
-     * 画面のタッチイベントメソッド
-     * @param event
-     * @return
-     */
-    // EditText編集時に背景をタップしたらキーボードを閉じるようにするタッチイベントの処理
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        //キーボードを隠す
-        // 予測変換表示もソフトキーボードも非表示にする
-        mInputMethodManager.hideSoftInputFromWindow(mLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        //背景にフォーカスを移す
-        mLayout.requestFocus();
-        return false;
-    }
-
-    /**
-     * クリックイベントメソッド
-     * @param v
-     */
-    @Override
-    public void onClick(View v){
-        Intent intent = new Intent();
-        Bundle bundle = new Bundle();
-        int id = v.getId();
-
-        //アラーム時間設定
-        TimePicker tPicker = findViewById(R.id.timePicker);
-        hour = tPicker.getCurrentHour();
-        min = tPicker.getCurrentMinute();
-
-        //switch (v.getId()){
-            if (id == R.id.set) {
-                // アラームを設定する
-                mAlarmSender = this.getPendingIntent();
-
-                // アラーム時間設定
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(System.currentTimeMillis());
-                // 設定した時刻をカレンダーに設定
-                cal.set(Calendar.HOUR_OF_DAY, hour);
-                cal.set(Calendar.MINUTE, min);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND, 0);
-
-                // 過去だったら明日にする
-                if (cal.getTimeInMillis() < System.currentTimeMillis()) {
-                    cal.add(Calendar.DAY_OF_YEAR, 1);
-                }
-                bundle.putInt("hour", hour);
-                bundle.putInt("min", min);
-                intent.putExtras(bundle);
-                setResult(RESULT_OK, intent);
-                finish();
-            } else if(id == R.id.cancel) {
-                finish();
+        // 保存ボタンの処理
+        Button saveButton = findViewById(R.id.button_save);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveSettings();
             }
+        });
+
+        // 既存の設定値を読み込んで表示
+        loadSettings();
     }
 
     /**
-     * アラーム時に起動するアプリケーションを登録
-     * @return 起動するアプリケーション
+     * SharedPreferencesに設定値を保存し、Main_Activityに起床希望時間を返す
      */
-    private PendingIntent getPendingIntent() {
-        // アラーム時に起動するアプリケーションを登録
-        Intent intent = new Intent(this, Alarm_Stop.class);
-        return PendingIntent.getService(this, PendingIntent.FLAG_ONE_SHOT, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    private void saveSettings() {
+        // 入力値を取得
+        String wakeHourStr = wakeUpHourEditText.getText().toString();
+        String wakeMinuteStr = wakeUpMinuteEditText.getText().toString();
+        String lateHourStr = lateHourEditText.getText().toString();
+        String lateMinuteStr = lateMinuteEditText.getText().toString();
+        String snoozeStr = snoozeMinuteEditText.getText().toString();
+
+        // 未入力チェック
+        if (TextUtils.isEmpty(wakeHourStr) || TextUtils.isEmpty(wakeMinuteStr) ||
+                TextUtils.isEmpty(lateHourStr) || TextUtils.isEmpty(lateMinuteStr) ||
+                TextUtils.isEmpty(snoozeStr)) {
+            Toast.makeText(this, "全ての項目を入力してください", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 数値に変換
+        int wakeHour = Integer.parseInt(wakeHourStr);
+        int wakeMinute = Integer.parseInt(wakeMinuteStr);
+        int lateHour = Integer.parseInt(lateHourStr);
+        int lateMinute = Integer.parseInt(lateMinuteStr);
+        int snooze = Integer.parseInt(snoozeStr);
+
+        // SharedPreferencesに保存
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_WAKE_HOUR, wakeHour);
+        editor.putInt(KEY_WAKE_MINUTE, wakeMinute);
+        editor.putInt(KEY_LATE_HOUR, lateHour);
+        editor.putInt(KEY_LATE_MINUTE, lateMinute);
+        editor.putInt(KEY_SNOOZE, snooze);
+        editor.apply();
+
+        Toast.makeText(this, "設定を保存しました", Toast.LENGTH_SHORT).show();
+
+        // Main_Activityに結果（起床希望時間）を返す
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("hour", wakeHour);
+        resultIntent.putExtra("min", wakeMinute);
+        setResult(RESULT_OK, resultIntent);
+
+        // この画面を閉じる
+        finish();
+    }
+
+    /**
+     * 既存の設定をSharedPreferencesから読み込んで表示する
+     */
+    private void loadSettings() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        // 保存されている値がなければデフォルト値（例：6時30分など）を読み込む
+        wakeUpHourEditText.setText(String.valueOf(prefs.getInt(KEY_WAKE_HOUR, 6)));
+        wakeUpMinuteEditText.setText(String.valueOf(prefs.getInt(KEY_WAKE_MINUTE, 30)));
+        lateHourEditText.setText(String.valueOf(prefs.getInt(KEY_LATE_HOUR, 7)));
+        lateMinuteEditText.setText(String.valueOf(prefs.getInt(KEY_LATE_MINUTE, 0)));
+        snoozeMinuteEditText.setText(String.valueOf(prefs.getInt(KEY_SNOOZE, 20)));
     }
 }

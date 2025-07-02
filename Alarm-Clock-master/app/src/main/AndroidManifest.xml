@@ -2,8 +2,13 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ogatafutoshikawa.alarm_clock">
+
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,23 +16,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".Main_Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name = "MyAlarmAction"></action>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Alarm_Activity"/>
+        <activity android:name=".Check_Activity"/>
+        <activity android:name=".Alarm_Stop"/>
+
         <activity android:name=".Prefecture_Activity"/>
         <activity android:name=".City_Activity"/>
-        <activity android:name=".Check_Activity"/>
-        <activity android:name=".Alarm_Activity"/>
-        <activity android:name=".Alarm_Stop"/>
+        <activity android:name=".Weather_Activity"/>
         <activity android:name=".Voice_Reading"/>
-        <activity android:name=".Weather_Activity"></activity>
+
         <receiver android:name=".Alarm_Receiver"></receiver>
         <service android:name=".Alarm_Service"></service>
+
     </application>
-    <!-- ネット接続を許可する -->
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

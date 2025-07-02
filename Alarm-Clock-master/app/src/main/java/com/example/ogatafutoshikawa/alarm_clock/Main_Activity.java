@@ -4,223 +4,166 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-/**
- * メインのクラス。AppCompatActivityクラスを継承。View.OnClickListenerをインポートしている。
- * @version 1.0
- * @author Ogata
- */
 public class Main_Activity extends AppCompatActivity
-                            implements View.OnClickListener{
+        implements View.OnClickListener{
 
-    //データ受け渡しの際に使うkey
-    /**Alarm_Activityクラスへの受け渡しの認証キー*/
+    // データ受け渡しの際に使うkey
+    // REQUEST_TIME は、今回「設定画面」を呼び出すためのキーとして流用します。
     public static final int REQUEST_TIME = 0;
+    public static final int REQUEST_PREFECTURE= 1; // 天気機能は使いませんが、念のため残しておきます
+    public static final int REQUEST_CITY= 2; // 同上
 
-    /**Prefecture_Activityクラスへの受け渡しの認証キー*/
-    public static final int REQUEST_PREFECTURE= 1;
-
-    /**City_Activityクラスへの受け渡しの認証キー*/
-    public static final int REQUEST_CITY= 2;
-
-    /**City_Activityクラスにどの県を選択したかのデータを渡す際に使う認証キー*/
+    // 各Activityへデータを渡す際のキー
     public static final String PRE_NUM= "num";
-
-    /**Check_Activityクラスに"時間"のデータを渡す際に使う認証キー*/
-    public static final String HOUR_DATA= "0";
-
-    /**Check_Activityクラスに"分"のデータを渡す際に使う認証キー*/
-    public static final String MIN_DATA= "1";
-
-    /**Check_Activityクラスに"県"のデータを渡す際に使う認証キー*/
+    public static final String HOUR_DATA= "hour";
+    public static final String MIN_DATA= "min";
     public static final String PREFECTURE_DATA= "prefecture";
-
-    /**Check_Activityクラスに"市"のデータを渡す際に使う認証キー*/
     public static final String CITY_DATA = "city";
 
-    //変数宣言
-    /**Prefecture_Activityクラスから受け取ったデータを格納するフィールド*/
+
+    // ユーザーが設定した起床希望時間を格納するフィールド
+    private int wakeUpHour = -1; // -1は未設定状態を示す
+    private int wakeUpMinute = -1;
+
+    // --- 天気関連の変数は今回は使用しないため、コメントアウトまたは削除しても構いません ---
     String pre_str = null;
-
-    /**City_Activityクラスから受け取ったデータを格納するフィールド*/
     String city_str = null;
-
-    /**pre_strのデータを保存するためのフィールド（変更した時Cityのところを空白にするため）*/
     String save_pre = null;
-
-    /**県の番号。01~47の2桁*/
     String pre_key = null;
-
-    /**市の番号。県によってバラバラの４桁*/
     String city_key = null;
-
-    /**県の番号と市の番号を足したもの*/
     String place_key = null;
-
-    /**県の番号。市の番号を検索する際に単純化させるため*/
     int pre_num = 0;
-
-    /**Alarm_Activityクラスから受け取った"時間"のデータを格納するフィールド*/
-    int hour = 100;
-
-    /**Alarm_Activityクラスから受け取った"分"のデータを格納するフィールド*/
-    int min = 100;
+    // --- ここまで ---
 
 
-    /**
-     * Main_Activityの画面を構成するメソッド
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.set);
 
-        //各ボタンのオブジェクト化
+        // 各ボタンのオブジェクト化
+        // 「時間」ボタンは事実上「設定」ボタンとして機能します。
         Button btnTime = this.findViewById(R.id.time);
-        Button btnPrefecture = this.findViewById(R.id.prefecture);
-        Button btnCity = this.findViewById(R.id.city);
-        Button btnCheack = this.findViewById(R.id.cheack);
+        Button btnPrefecture = this.findViewById(R.id.prefecture); // 天気機能用
+        Button btnCity = this.findViewById(R.id.city); // 天気機能用
+        Button btnCheck = this.findViewById(R.id.cheack); // アラーム確定ボタン
 
-        //各ボタンのクリック判定
+        // 各ボタンのクリック判定
         btnTime.setOnClickListener(this);
         btnPrefecture.setOnClickListener(this);
         btnCity.setOnClickListener(this);
-        btnCheack.setOnClickListener(this);
+        btnCheck.setOnClickListener(this);
+
+        // フェイクタイム設定ボタンを追加（set.xmlに追加した場合）
+        // Button btnOpenSettings = findViewById(R.id.button_open_settings);
+        // btnOpenSettings.setOnClickListener(this);
+
+        // 以前設定した起床希望時間を読み込んで表示
+        loadWakeUpTime();
     }
 
 
     /**
-     * 時間のブロックを更新するメソッド
-     * @param hour
-     * @param min
-     */
-    //時間のブロックに指定した時間を表示
-    @SuppressLint("SetTextI18n")
-    public void changeTime(int hour, int min) {
-        TextView tv = findViewById(R.id.time);
-        String hspace = "";
-        String mspace = "";
-        if(hour < 10){
-            hspace = "0";
-        }
-        if(min < 10){
-            mspace = "0";
-        }
-        tv.setText(hspace + hour + ":"+ mspace + min);
-    }
-
-    /**
-     * 県のブロックを更新するメソッド
-     * @param str
-     */
-    //県のブロックに指定した県を表示
-    public void changePrefecture(String str) {
-        TextView tv = findViewById(R.id.prefecture);
-        tv.setText(str);
-    }
-
-    /**
-     * 市のブロックを更新するメソッド
-     * @param str
-     */
-    //市のブロックに指定した県を表示
-    public void changeCity(String str) {
-        TextView tv = findViewById(R.id.city);
-        tv.setText(str);
-    }
-
-    /**
-     * クリックイベントのメソッド
+     * ボタンのクリックイベントを処理するメソッド
      * @param v
      */
-    //各クリックのイベント
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if(id == R.id.time) {
-            Intent intent1 = new Intent(Main_Activity.this, Alarm_Activity.class);
-            startActivityForResult(intent1,REQUEST_TIME);
-        } else if (id == R.id.prefecture) {
-            Intent intent2 = new Intent(Main_Activity.this, Prefecture_Activity.class);
-            startActivityForResult(intent2,REQUEST_PREFECTURE);
-        } else if (id == R.id.city) {
-            if(pre_num != 0) {
-                Intent intent3 = new Intent(Main_Activity.this, City_Activity.class);
-                intent3.putExtra(PRE_NUM,pre_num);
-                startActivityForResult(intent3,REQUEST_CITY);
-            }
-        } else if (id ==R. id.cheack) {
-            if(hour < 100 && min < 100 && pre_str != null && city_str != null) {
-                place_key = pre_key + city_key;
-                Intent intent4 = new Intent(Main_Activity.this, Check_Activity.class);
-                intent4.putExtra(HOUR_DATA, hour);
-                intent4.putExtra(MIN_DATA, min);
-                intent4.putExtra(PREFECTURE_DATA, pre_str);
-                intent4.putExtra(CITY_DATA, city_str);
+        if (id == R.id.time) { // 時間ボタンが押されたら設定画面へ
+            // Alarm_Activity（現在は設定画面）を呼び出す
+            Intent intent = new Intent(Main_Activity.this, Alarm_Activity.class);
+            startActivityForResult(intent, REQUEST_TIME);
+        } else if (id == R.id.cheack) { // OKボタンが押されたらアラームをセット
+            // 起床希望時間が設定されていればCheck_Activityを起動
+            if (wakeUpHour != -1 && wakeUpMinute != -1) {
+                Intent intent = new Intent(Main_Activity.this, Check_Activity.class);
+                intent.putExtra(HOUR_DATA, wakeUpHour);
+                intent.putExtra(MIN_DATA, wakeUpMinute);
 
-                SharedPreferences data = getSharedPreferences("DataSave", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = data.edit();
-                editor.putString("Save", place_key);
-                editor.apply();
+                // --- 天気関連のデータも渡す場合はここに記述 ---
+                // 今回はアラーム時間のみ渡す
+                // intent.putExtra(PREFECTURE_DATA, pre_str);
+                // intent.putExtra(CITY_DATA, city_str);
+                // SharedPreferences data = getSharedPreferences("DataSave", Context.MODE_PRIVATE);
+                // SharedPreferences.Editor editor = data.edit();
+                // editor.putString("Save", place_key);
+                // editor.apply();
+                // --- ここまで ---
 
-                startActivity(intent4);
+                startActivity(intent);
             }
         }
+        // --- 天気関連のボタン処理は今回は不要 ---
+        // else if (id == R.id.prefecture) { ... }
+        // else if (id == R.id.city) { ... }
+        // --- ここまで ---
     }
 
+
     /**
-     * 各Activityからのデータを受け取るメソッド
+     * 他のActivityからデータを受け取るメソッド
      * @param requestCode
      * @param resultCode
      * @param intent
      */
-    //他のActivityからのデータの受け取り
     @Override
-    protected  void onActivityResult(int requestCode, int resultCode, Intent intent){
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        Bundle bundle;
 
-        switch(requestCode){
-            case (REQUEST_PREFECTURE):
-                if(resultCode == RESULT_OK){
-                    bundle = intent.getExtras();
-                    assert bundle != null;
-                    pre_str = bundle.getString("prefecture");
-                    pre_key = bundle.getString("pre_key");
-                    pre_num = bundle.getInt("pre_num");
-                    changePrefecture(pre_str);
-                    if(save_pre != pre_str){
-                        changeCity("---");
-                    }
-                    save_pre = pre_str;
-                }
-                break;
+        // 設定画面（Alarm_Activity）からの結果を受け取る
+        if (requestCode == REQUEST_TIME && resultCode == RESULT_OK) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                // 返された起床希望時間で変数を更新
+                wakeUpHour = bundle.getInt("hour");
+                wakeUpMinute = bundle.getInt("min");
+                // 画面の時刻表示を更新
+                changeTime(wakeUpHour, wakeUpMinute);
+            }
+        }
 
-            case (REQUEST_CITY):
-                if(resultCode == RESULT_OK){
-                    bundle = intent.getExtras();
-                    assert bundle != null;
-                    city_str= bundle.getString("city");
-                    city_key = bundle.getString("city_key");
-                    changeCity(city_str);
-                }
-                break;
+        // --- 天気関連のActivityからの結果処理は今回は不要 ---
+        // switch(requestCode){ ... }
+        // --- ここまで ---
+    }
 
-            case(REQUEST_TIME):
-                if(resultCode == RESULT_OK) {
-                    bundle = intent.getExtras();
-                    assert bundle != null;
-                    hour = bundle.getInt("hour");
-                    min = bundle.getInt("min");
-                    changeTime(hour,min);
-                }
-                break;
+    /**
+     * 時間表示用のUI（Button）のテキストを更新するメソッド
+     * @param hour 時
+     * @param min 分
+     */
+    @SuppressLint("SetTextI18n")
+    public void changeTime(int hour, int min) {
+        Button timeButton = findViewById(R.id.time);
+        if (hour != -1 && min != -1) {
+            String h_space = (hour < 10) ? "0" : "";
+            String m_space = (min < 10) ? "0" : "";
+            timeButton.setText(h_space + hour + ":" + m_space + min);
+        } else {
+            // 未設定の場合はデフォルトの表示に戻す
+            timeButton.setText("---");
         }
     }
+
+    /**
+     * アプリ起動時に、以前保存した起床希望時間を読み込んで表示する
+     */
+    private void loadWakeUpTime() {
+        SharedPreferences prefs = getSharedPreferences(Alarm_Activity.PREFS_NAME, Context.MODE_PRIVATE);
+        wakeUpHour = prefs.getInt(Alarm_Activity.KEY_WAKE_HOUR, -1);
+        wakeUpMinute = prefs.getInt(Alarm_Activity.KEY_WAKE_MINUTE, -1);
+        changeTime(wakeUpHour, wakeUpMinute);
+    }
+
+    // --- 天気関連のchangePrefecture, changeCityメソッドは今回は不要 ---
+    // public void changePrefecture(String str) { ... }
+    // public void changeCity(String str) { ... }
+    // --- ここまで ---
 }
