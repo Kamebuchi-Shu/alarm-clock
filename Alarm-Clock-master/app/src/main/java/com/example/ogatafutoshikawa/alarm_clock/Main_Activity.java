@@ -44,15 +44,15 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
 
         // 各ボタンのオブジェクト化
         Button btnTime = findViewById(R.id.time);
-        Button btnPrefecture = findViewById(R.id.prefecture);
-        Button btnCity = findViewById(R.id.city);
+        //Button btnPrefecture = findViewById(R.id.prefecture);
+        //Button btnCity = findViewById(R.id.city);
         Button btnCheack = findViewById(R.id.cheack);
         Button btnAudio = findViewById(R.id.audio_select);
 
         // 各ボタンのクリックリスナー設定
         btnTime.setOnClickListener(this);
-        btnPrefecture.setOnClickListener(this);
-        btnCity.setOnClickListener(this);
+        //btnPrefecture.setOnClickListener(this);
+        //btnCity.setOnClickListener(this);
         btnCheack.setOnClickListener(this);
         btnAudio.setOnClickListener(this);
 
