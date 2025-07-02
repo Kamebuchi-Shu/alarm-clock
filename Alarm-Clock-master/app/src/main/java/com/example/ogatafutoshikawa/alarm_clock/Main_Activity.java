@@ -122,7 +122,7 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
             Intent intent = new Intent(this, AudioSelectActivity.class);
             startActivityForResult(intent, REQUEST_AUDIO);
         } else if (id == R.id.cheack) {
-            if (hour < 100 && min < 100 && pre_str != null && city_str != null) {
+            if (hour < 100 && min < 100) {
                 place_key = pre_key + city_key;
 
                 Intent intent = new Intent(this, Check_Activity.class);
