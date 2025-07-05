@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ogatafutoshikawa.alarm_clock">
+
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,23 +15,39 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Main_Activity">
+
+        <activity
+            android:name=".Main_Activity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name = "MyAlarmAction"></action>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Prefecture_Activity"/>
-        <activity android:name=".City_Activity"/>
-        <activity android:name=".Check_Activity"/>
-        <activity android:name=".Alarm_Activity"/>
-        <activity android:name=".Alarm_Stop"/>
-        <activity android:name=".Voice_Reading"/>
-        <activity android:name=".Weather_Activity"></activity>
-        <receiver android:name=".Alarm_Receiver"></receiver>
-        <service android:name=".Alarm_Service"></service>
+
+        <!-- 親アクティビティを指定 -->
+        <activity
+            android:name=".AudioSelectActivity"
+            android:label="@string/audio_select_title"
+            android:theme="@style/AppTheme"
+            android:parentActivityName=".Main_Activity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Main_Activity" />
+        </activity>
+
+        <!-- その他のアクティビティ -->
+        <activity android:name=".Prefecture_Activity" />
+        <activity android:name=".City_Activity" />
+        <activity android:name=".Check_Activity" />
+        <activity android:name=".Alarm_Activity" />
+        <activity android:name=".Alarm_Stop" />
+        <activity android:name=".Voice_Reading" />
+        <activity android:name=".Weather_Activity" />
+
+        <!-- レシーバーとサービス -->
+        <receiver android:name=".Alarm_Receiver" />
+        <service android:name=".Alarm_Service" />
+
     </application>
-    <!-- ネット接続を許可する -->
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

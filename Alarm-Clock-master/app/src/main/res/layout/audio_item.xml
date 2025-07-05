@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:baselineAligned="false">
+
+    <!-- 音声ファイル名 -->
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:text="ファイル名"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="16sp"
+        android:gravity="center_vertical"/>
+
+    <!-- 選択ボタン -->
+    <Button
+        android:id="@+id/buttonSelect"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:text="選"
+        android:textSize="14sp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"/>
+
+    <!-- 再生ボタン -->
+    <Button
+        android:id="@+id/buttonPlay"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:text="▶"
+        android:textSize="14sp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"/>
+
+    <!-- 削除ボタン -->
+    <Button
+        android:id="@+id/buttonDelete"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:text="削"
+        android:textSize="14sp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"/>
+</LinearLayout>
+

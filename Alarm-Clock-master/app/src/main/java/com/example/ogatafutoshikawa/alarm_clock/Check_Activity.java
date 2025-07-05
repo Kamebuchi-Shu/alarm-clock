@@ -5,8 +5,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,54 +17,84 @@ import java.util.Calendar;
 
 public class Check_Activity extends AppCompatActivity {
 
+    private static final String TAG = "Check_Activity"; // ログ用タグ
+
+    // 新機能用のフィールド
+    private int standardHour;
+    private int standardMin;
+    private int fakeHour;
+    private int fakeMin;
+    private boolean forceModeEnabled;
+
     /**
-     * City_Activityの画面構成をするメソッド
+     * Check_Activityの画面構成をするメソッド
      * @param savedInstanceState
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cheack);
 
         Intent intent = getIntent();
-        Intent bootIntent = new Intent(Check_Activity.this, Alarm_Receiver.class);
 
-        final PendingIntent alarmIntent = PendingIntent.getBroadcast(Check_Activity.this, 0, bootIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        final AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        // 新機能: 2つの時間とフォースモードを取得
+        standardHour = intent.getIntExtra(Main_Activity.STANDARD_HOUR_DATA, 0);
+        standardMin = intent.getIntExtra(Main_Activity.STANDARD_MIN_DATA, 0);
+        fakeHour = intent.getIntExtra(Main_Activity.FAKE_HOUR_DATA, 0);
+        fakeMin = intent.getIntExtra(Main_Activity.FAKE_MIN_DATA, 0);
+        forceModeEnabled = intent.getBooleanExtra(Main_Activity.FORCE_MODE_DATA, false);
 
-        int notificationId = 0;
-        bootIntent.putExtra("notificationId", notificationId);
+        // 旧機能: 単一時間設定（後方互換性のため保持）
+        int get_hour = intent.getIntExtra(Main_Activity.HOUR_DATA, 0);
+        int get_min = intent.getIntExtra(Main_Activity.MIN_DATA, 0);
+        //String get_prefecture = intent.getStringExtra(Main_Activity.PREFECTURE_DATA);
+        //String get_city = intent.getStringExtra(Main_Activity.CITY_DATA);
 
-        int get_hour = intent.getIntExtra(Main_Activity.HOUR_DATA,0);
-        int get_min = intent.getIntExtra(Main_Activity.MIN_DATA,0);
-        String get_prefecture = intent.getStringExtra(Main_Activity.PREFECTURE_DATA);
-        String get_city = intent.getStringExtra(Main_Activity.CITY_DATA);
+        // UI要素の取得
+        TextView standardTimeDisplay = findViewById(R.id.standard_time_display);
+        TextView fakeTimeDisplay = findViewById(R.id.fake_time_display);
+        TextView forceModeStatus = findViewById(R.id.force_mode_status);
+        TextView probabilityInfo = findViewById(R.id.probability_info_display);
+
+        // 時間表示の更新
+        displayTime(standardTimeDisplay, standardHour, standardMin);
+        displayTime(fakeTimeDisplay, fakeHour, fakeMin);
+
+        // フォースモードの状態表示
+        String modeText = forceModeEnabled ? "ON (フェイクタイム100%)" : "OFF";
+        forceModeStatus.setText(modeText);
+
+        // 確率情報の表示
+        String probText = forceModeEnabled ? "フェイクタイム: 100%" : "規定時間: 30% / フェイクタイム: 70%";
+        probabilityInfo.setText(probText);
+
+        // 標準時間用のリクエストコード（規定時間用）
+        int standardRequestCode = standardHour * 1000 + standardMin;
+        // フェイクタイム用のリクエストコード（+10000で区別）
+        int fakeRequestCode = fakeHour * 1000 + fakeMin + 10000;
+
+        // 標準時間のアラーム設定
+        setupAlarm(standardHour, standardMin, standardRequestCode, "standard");
+        
+        // フェイクタイムのアラーム設定
+        setupAlarm(fakeHour, fakeMin, fakeRequestCode, "fake");
 
         Button btnReset = this.findViewById(R.id.reset);
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alarm.cancel(alarmIntent);
+                // 全てのアラームをキャンセル
+                cancelAllAlarms();
                 finish();
             }
         });
 
-        changePre(get_prefecture);
-        changeCity(get_city);
-        changeTime2(get_hour, get_min);
-
-        Calendar startTime = Calendar.getInstance();
-        startTime.set(Calendar.HOUR_OF_DAY, get_hour);
-        startTime.set(Calendar.MINUTE, get_min);
-        startTime.set(Calendar.SECOND, 0);
-        long alarmStartTime = startTime.getTimeInMillis();
-
-        alarm.set(
-                //デバイスがスリープ状態の場合に alarm が動作した場合、alarm はデバイスを起こす
-                AlarmManager.RTC_WAKEUP,
-                alarmStartTime,
-                alarmIntent         // PendingIntent
-        );
+        //changePre(get_prefecture);
+        //changeCity(get_city);
+        // 後方互換性のため（使用されない場合は何もしない）
+        if (get_hour != 0 || get_min != 0) {
+            changeTime2(get_hour, get_min);
+        }
     }
 
     /**
@@ -72,14 +104,8 @@ public class Check_Activity extends AppCompatActivity {
      */
     @SuppressLint("SetTextI18n")
     public void changeTime2(int h, int m){
-        String hspace = "";
-        String mspace = "";
-        if(h < 10){
-            hspace = "0";
-        }
-        if(m < 10){
-            mspace = "0";
-        }
+        String hspace = h < 10 ? "0" : "";
+        String mspace = m < 10 ? "0" : "";
         TextView tv = findViewById(R.id.time2);
         tv.setText(hspace + h + ":" + mspace + m);
     }
@@ -88,17 +114,110 @@ public class Check_Activity extends AppCompatActivity {
      *
      * @param str
      */
-    public void changePre(String str) {
+    /*public void changePre(String str) {
         TextView tv = findViewById(R.id.prefecture2);
         tv.setText(str);
-    }
+    }*/
 
     /**
      *
      * @param str
      */
-    public void changeCity(String str) {
+    /*public void changeCity(String str) {
         TextView tv = findViewById(R.id.city2);
         tv.setText(str);
+    }*/
+
+    // 時間を表示する共通メソッド
+    @SuppressLint("SetTextI18n")
+    private void displayTime(TextView textView, int hour, int min) {
+        String hspace = hour < 10 ? "0" : "";
+        String mspace = min < 10 ? "0" : "";
+        textView.setText(hspace + hour + ":" + mspace + min);
+    }
+
+    // アラーム設定の共通メソッド
+    private void setupAlarm(int hour, int min, int requestCode, String alarmType) {
+        // アラーム用のIntent
+        Intent bootIntent = new Intent(Check_Activity.this, Alarm_Receiver.class);
+        bootIntent.putExtra("notificationId", requestCode);
+        bootIntent.putExtra("alarmType", alarmType); // "standard" または "fake"
+        bootIntent.putExtra("standardHour", standardHour);
+        bootIntent.putExtra("standardMin", standardMin);
+        bootIntent.putExtra("fakeHour", fakeHour);
+        bootIntent.putExtra("fakeMin", fakeMin);
+        bootIntent.putExtra("forceModeEnabled", forceModeEnabled);
+
+        // PendingIntentの作成
+        final PendingIntent alarmIntent = PendingIntent.getBroadcast(
+                Check_Activity.this,
+                requestCode,
+                bootIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        final AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        // アラーム時間の設定
+        Calendar startTime = Calendar.getInstance();
+        startTime.set(Calendar.HOUR_OF_DAY, hour);
+        startTime.set(Calendar.MINUTE, min);
+        startTime.set(Calendar.SECOND, 0);
+        startTime.set(Calendar.MILLISECOND, 0);
+        long alarmStartTime = startTime.getTimeInMillis();
+
+        // 過去の時間に設定された場合は翌日にする
+        if (alarmStartTime <= System.currentTimeMillis()) {
+            alarmStartTime += 24 * 60 * 60 * 1000; // 1日追加
+            Log.d(TAG, "過去の時刻設定を検出、翌日に設定: " + hour + ":" + min + " (" + alarmType + ")");
+        }
+
+        // Androidバージョンに応じたアラーム設定
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarm.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    alarmStartTime,
+                    alarmIntent
+            );
+            Log.d(TAG, "setExactAndAllowWhileIdleを使用");
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarm.setExact(
+                    AlarmManager.RTC_WAKEUP,
+                    alarmStartTime,
+                    alarmIntent
+            );
+            Log.d(TAG, "setExactを使用");
+        } else {
+            alarm.set(
+                    AlarmManager.RTC_WAKEUP,
+                    alarmStartTime,
+                    alarmIntent
+            );
+            Log.d(TAG, "setを使用");
+        }
+
+        Log.d(TAG, "アラーム設定: " + hour + ":" + min + " (" + alarmType + ", リクエストコード: " + requestCode + ")");
+    }
+
+    // 全てのアラームをキャンセルする
+    private void cancelAllAlarms() {
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        
+        int standardRequestCode = standardHour * 1000 + standardMin;
+        int fakeRequestCode = fakeHour * 1000 + fakeMin + 10000;
+
+        // 標準時間のアラームをキャンセル
+        Intent standardIntent = new Intent(this, Alarm_Receiver.class);
+        PendingIntent standardPendingIntent = PendingIntent.getBroadcast(
+                this, standardRequestCode, standardIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarm.cancel(standardPendingIntent);
+
+        // フェイクタイムのアラームをキャンセル
+        Intent fakeIntent = new Intent(this, Alarm_Receiver.class);
+        PendingIntent fakePendingIntent = PendingIntent.getBroadcast(
+                this, fakeRequestCode, fakeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarm.cancel(fakePendingIntent);
+
+        Log.d(TAG, "全てのアラームをキャンセルしました");
     }
 }
