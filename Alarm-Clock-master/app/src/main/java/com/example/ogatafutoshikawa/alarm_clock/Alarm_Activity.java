@@ -22,11 +22,22 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
     private RelativeLayout mLayout;
     private int hour;
     private int min;
+    private String timeType; // "standard" または "fake" を識別するフィールド
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.alarm);
+
+        // どの時間タイプかを取得
+        Intent intent = getIntent();
+        timeType = intent.getStringExtra("time_type");
+
+        // タイトルを設定
+        if (getSupportActionBar() != null) {
+            String title = "standard".equals(timeType) ? "規定時間設定" : "フェイクタイム設定";
+            getSupportActionBar().setTitle(title);
+        }
 
         mLayout = findViewById(R.id.mainLayout);
         mInputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

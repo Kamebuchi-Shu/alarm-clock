@@ -1,12 +1,15 @@
 package com.example.ogatafutoshikawa.alarm_clock;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.speech.tts.TextToSpeech;
 import android.content.SharedPreferences;
@@ -15,19 +18,68 @@ import android.net.Uri;
 public class Alarm_Stop extends AppCompatActivity
                         implements View.OnClickListener{
 
+    private static final String TAG = "Alarm_Stop";
+    
     private MediaPlayer mp;
     private TextToSpeech textToSpeech;
     private Handler handler = new Handler();
     private Runnable speakRunnable;
     private boolean isSpeaking = false;
 
+    // 新機能用フィールド
+    private int displayHour;
+    private int displayMin;
+    private String actualAlarmType;
+    private int actualHour;
+    private int actualMin;
+    private boolean forceModeEnabled;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stop_alarm);
 
+        // Alarm_Receiverから渡されたデータを取得
+        Intent intent = getIntent();
+        displayHour = intent.getIntExtra("displayHour", 0);
+        displayMin = intent.getIntExtra("displayMin", 0);
+        actualAlarmType = intent.getStringExtra("actualAlarmType");
+        actualHour = intent.getIntExtra("actualHour", 0);
+        actualMin = intent.getIntExtra("actualMin", 0);
+        forceModeEnabled = intent.getBooleanExtra("forceModeEnabled", false);
+
+        Log.d(TAG, "アラーム停止画面開始 - 表示時間: " + displayHour + ":" + displayMin + 
+                   ", 実際のタイプ: " + actualAlarmType + 
+                   ", 実際の時間: " + actualHour + ":" + actualMin + 
+                   ", 強制モード: " + forceModeEnabled);
+
+        // UI要素の初期化
+        initializeUI();
+
         Button btnStop = this.findViewById(R.id.stop);
         btnStop.setOnClickListener(this);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void initializeUI() {
+        // 時間表示（常に規定時間を表示）
+        TextView timeDisplay = findViewById(R.id.time_display);
+        String timeText = String.format("%02d:%02d", displayHour, displayMin);
+        timeDisplay.setText(timeText);
+
+        // アラーム情報表示
+        TextView alarmInfo = findViewById(R.id.alarm_info);
+        alarmInfo.setText("規定時間です"); // 常に規定時間と表示
+
+        // デバッグ情報表示
+        TextView debugInfo = findViewById(R.id.debug_info);
+        String debugText = String.format("実際: %s (%02d:%02d) | 強制: %s", 
+                actualAlarmType != null ? ("fake".equals(actualAlarmType) ? "フェイク" : "規定") : "不明",
+                actualHour, actualMin,
+                forceModeEnabled ? "ON" : "OFF");
+        debugInfo.setText(debugText);
+
+        Log.d(TAG, "UI初期化完了 - " + debugText);
     }
 
     @Override

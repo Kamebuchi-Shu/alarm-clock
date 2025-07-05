@@ -75,4 +75,15 @@
     <string name="audio_select_title">音声選択</string>
 
     <string name="hello">おはようございます</string>
+    
+    <!-- フェイクタイム用新機能用文字列リソース -->
+    <string name="standard_time">規定時間</string>
+    <string name="fake_time">フェイクタイム</string>
+    <string name="fake_time_force_mode">フェイクタイム強制モード</string>
+    <string name="alarm_type_setting">アラーム設定</string>
+    <string name="probability_info">規定時間30% / フェイクタイム70%</string>
+    <string name="force_mode_on">強制モード: ON</string>
+    <string name="force_mode_off">強制モード: OFF</string>
+    <string name="standard_time_set">規定時間設定</string>
+    <string name="fake_time_set">フェイクタイム設定</string>
 </resources>
