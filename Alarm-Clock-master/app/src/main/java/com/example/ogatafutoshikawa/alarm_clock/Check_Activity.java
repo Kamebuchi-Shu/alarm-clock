@@ -22,8 +22,10 @@ public class Check_Activity extends AppCompatActivity {
     // 新機能用のフィールド
     private int standardHour;
     private int standardMin;
+    private int standardSec; // 秒を追加
     private int fakeHour;
     private int fakeMin;
+    private int fakeSec; // 秒を追加
     private boolean forceModeEnabled;
 
     /**
@@ -40,8 +42,10 @@ public class Check_Activity extends AppCompatActivity {
         // 新機能: 2つの時間とフォースモードを取得
         standardHour = intent.getIntExtra(Main_Activity.STANDARD_HOUR_DATA, 0);
         standardMin = intent.getIntExtra(Main_Activity.STANDARD_MIN_DATA, 0);
+        standardSec = intent.getIntExtra("standard_sec", 0); // 秒も取得
         fakeHour = intent.getIntExtra(Main_Activity.FAKE_HOUR_DATA, 0);
         fakeMin = intent.getIntExtra(Main_Activity.FAKE_MIN_DATA, 0);
+        fakeSec = intent.getIntExtra("fake_sec", 0); // 秒も取得
         forceModeEnabled = intent.getBooleanExtra(Main_Activity.FORCE_MODE_DATA, false);
 
         // 旧機能: 単一時間設定（後方互換性のため保持）
@@ -55,8 +59,8 @@ public class Check_Activity extends AppCompatActivity {
         TextView probabilityInfo = findViewById(R.id.probability_info_display);
 
         // 時間表示の更新
-        displayTime(standardTimeDisplay, standardHour, standardMin);
-        displayTime(fakeTimeDisplay, fakeHour, fakeMin);
+        displayTime(standardTimeDisplay, standardHour, standardMin, standardSec);
+        displayTime(fakeTimeDisplay, fakeHour, fakeMin, fakeSec);
 
         // フォースモードの状態表示
         String modeText = forceModeEnabled ? "ON (フェイクタイム100%)" : "OFF";
@@ -72,10 +76,10 @@ public class Check_Activity extends AppCompatActivity {
         int fakeRequestCode = fakeHour * 1000 + fakeMin + 10000;
 
         // 標準時間のアラーム設定
-        setupAlarm(standardHour, standardMin, standardRequestCode, "standard");
+        setupAlarm(standardHour, standardMin, standardSec, standardRequestCode, "standard");
         
         // フェイクタイムのアラーム設定
-        setupAlarm(fakeHour, fakeMin, fakeRequestCode, "fake");
+        setupAlarm(fakeHour, fakeMin, fakeSec, fakeRequestCode, "fake");
 
         Button btnReset = this.findViewById(R.id.reset);
         btnReset.setOnClickListener(new View.OnClickListener() {
@@ -111,14 +115,15 @@ public class Check_Activity extends AppCompatActivity {
 
     // 時間を表示する共通メソッド
     @SuppressLint("SetTextI18n")
-    private void displayTime(TextView textView, int hour, int min) {
+    private void displayTime(TextView textView, int hour, int min, int sec) {
         String hspace = hour < 10 ? "0" : "";
         String mspace = min < 10 ? "0" : "";
-        textView.setText(hspace + hour + ":" + mspace + min);
+        String sspace = sec < 10 ? "0" : "";
+        textView.setText(hspace + hour + ":" + mspace + min + ":" + sspace + sec);
     }
 
     // アラーム設定の共通メソッド
-    private void setupAlarm(int hour, int min, int requestCode, String alarmType) {
+    private void setupAlarm(int hour, int min, int sec, int requestCode, String alarmType) {
         // アラーム用のIntent
         Intent bootIntent = new Intent(Check_Activity.this, Alarm_Receiver.class);
         bootIntent.putExtra("notificationId", requestCode);
@@ -143,7 +148,7 @@ public class Check_Activity extends AppCompatActivity {
         Calendar startTime = Calendar.getInstance();
         startTime.set(Calendar.HOUR_OF_DAY, hour);
         startTime.set(Calendar.MINUTE, min);
-        startTime.set(Calendar.SECOND, 0);
+        startTime.set(Calendar.SECOND, sec); // 設定した秒を使用
         startTime.set(Calendar.MILLISECOND, 0);
         long alarmStartTime = startTime.getTimeInMillis();
 

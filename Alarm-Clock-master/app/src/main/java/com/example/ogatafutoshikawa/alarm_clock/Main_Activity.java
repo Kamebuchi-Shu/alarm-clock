@@ -35,13 +35,16 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
     // 変数宣言
     private int hour = 100;
     private int min = 100;
+    private int sec = 100; // 秒を追加
     private String selectedAudioName = "デフォルト音声"; // 選択された音声名を保持
     
     // 新機能用変数
     private int standardHour = 100;
     private int standardMin = 100;
+    private int standardSec = 100; // 規定時間の秒を追加
     private int fakeHour = 100;
     private int fakeMin = 100;
+    private int fakeSec = 100; // フェイクタイムの秒を追加
     private boolean forceModeEnabled = false;
     private String customMessage = ""; // カスタムメッセージ用変数
 
@@ -105,16 +108,18 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
         SharedPreferences prefs = getSharedPreferences("alarm_prefs", MODE_PRIVATE);
         standardHour = prefs.getInt(STANDARD_HOUR_DATA, 100);
         standardMin = prefs.getInt(STANDARD_MIN_DATA, 100);
+        standardSec = prefs.getInt("standard_sec", 100); // 秒も読み込み
         fakeHour = prefs.getInt(FAKE_HOUR_DATA, 100);
         fakeMin = prefs.getInt(FAKE_MIN_DATA, 100);
+        fakeSec = prefs.getInt("fake_sec", 100); // 秒も読み込み
         forceModeEnabled = prefs.getBoolean(FORCE_MODE_DATA, false);
 
         // 時間設定を表示
-        if (standardHour < 100 && standardMin < 100) {
-            changeStandardTime(standardHour, standardMin);
+        if (standardHour < 100 && standardMin < 100 && standardSec < 100) {
+            changeStandardTime(standardHour, standardMin, standardSec);
         }
-        if (fakeHour < 100 && fakeMin < 100) {
-            changeFakeTime(fakeHour, fakeMin);
+        if (fakeHour < 100 && fakeMin < 100 && fakeSec < 100) {
+            changeFakeTime(fakeHour, fakeMin, fakeSec);
         }
 
         // 強制モードスイッチの状態を設定
@@ -159,27 +164,30 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
     }
 
     @SuppressLint("SetTextI18n")
-    public void changeTime(int hour, int min) {
+    public void changeTime(int hour, int min, int sec) {
         TextView tv = findViewById(R.id.time);
         String hspace = hour < 10 ? "0" : "";
         String mspace = min < 10 ? "0" : "";
-        tv.setText(hspace + hour + ":" + mspace + min);
+        String sspace = sec < 10 ? "0" : "";
+        tv.setText(hspace + hour + ":" + mspace + min + ":" + sspace + sec);
     }
 
     @SuppressLint("SetTextI18n")
-    public void changeStandardTime(int hour, int min) {
+    public void changeStandardTime(int hour, int min, int sec) {
         Button btn = findViewById(R.id.standard_time);
         String hspace = hour < 10 ? "0" : "";
         String mspace = min < 10 ? "0" : "";
-        btn.setText(hspace + hour + ":" + mspace + min);
+        String sspace = sec < 10 ? "0" : "";
+        btn.setText(hspace + hour + ":" + mspace + min + ":" + sspace + sec);
     }
 
     @SuppressLint("SetTextI18n")
-    public void changeFakeTime(int hour, int min) {
+    public void changeFakeTime(int hour, int min, int sec) {
         Button btn = findViewById(R.id.fake_time);
         String hspace = hour < 10 ? "0" : "";
         String mspace = min < 10 ? "0" : "";
-        btn.setText(hspace + hour + ":" + mspace + min);
+        String sspace = sec < 10 ? "0" : "";
+        btn.setText(hspace + hour + ":" + mspace + min + ":" + sspace + sec);
     }
 
 
@@ -209,12 +217,15 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
             Intent intent = new Intent(this, AudioSelectActivity.class);
             startActivityForResult(intent, REQUEST_AUDIO);
         } else if (id == R.id.cheack) {
-            if (standardHour < 100 && standardMin < 100 && fakeHour < 100 && fakeMin < 100) {
+            if (standardHour < 100 && standardMin < 100 && standardSec < 100 && 
+                fakeHour < 100 && fakeMin < 100 && fakeSec < 100) {
                 Intent intent = new Intent(this, Check_Activity.class);
                 intent.putExtra(STANDARD_HOUR_DATA, standardHour);
                 intent.putExtra(STANDARD_MIN_DATA, standardMin);
+                intent.putExtra("standard_sec", standardSec); // 秒も追加
                 intent.putExtra(FAKE_HOUR_DATA, fakeHour);
                 intent.putExtra(FAKE_MIN_DATA, fakeMin);
+                intent.putExtra("fake_sec", fakeSec); // 秒も追加
                 intent.putExtra(FORCE_MODE_DATA, forceModeEnabled);
                 intent.putExtra("audio_name", selectedAudioName); // 音声名を渡す
                 
@@ -229,8 +240,8 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
                 startActivity(intent);
             } else {
                 String message = "設定されていない項目: ";
-                if (standardHour >= 100 || standardMin >= 100) message += "規定時間 ";
-                if (fakeHour >= 100 || fakeMin >= 100) message += "フェイクタイム ";
+                if (standardHour >= 100 || standardMin >= 100 || standardSec >= 100) message += "規定時間 ";
+                if (fakeHour >= 100 || fakeMin >= 100 || fakeSec >= 100) message += "フェイクタイム ";
 
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             }
@@ -245,8 +256,10 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
         // 時間設定を保存
         editor.putInt(STANDARD_HOUR_DATA, standardHour);
         editor.putInt(STANDARD_MIN_DATA, standardMin);
+        editor.putInt("standard_sec", standardSec); // 秒も保存
         editor.putInt(FAKE_HOUR_DATA, fakeHour);
         editor.putInt(FAKE_MIN_DATA, fakeMin);
+        editor.putInt("fake_sec", fakeSec); // 秒も保存
         editor.putBoolean(FORCE_MODE_DATA, forceModeEnabled);
 
         // 音声設定を保存
@@ -296,19 +309,22 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
             case REQUEST_STANDARD_TIME:
                 standardHour = bundle.getInt("hour");
                 standardMin = bundle.getInt("min");
-                changeStandardTime(standardHour, standardMin);
+                standardSec = bundle.getInt("sec", 0); // 秒も取得、デフォルト0
+                changeStandardTime(standardHour, standardMin, standardSec);
                 break;
 
             case REQUEST_FAKE_TIME:
                 fakeHour = bundle.getInt("hour");
                 fakeMin = bundle.getInt("min");
-                changeFakeTime(fakeHour, fakeMin);
+                fakeSec = bundle.getInt("sec", 0); // 秒も取得、デフォルト0
+                changeFakeTime(fakeHour, fakeMin, fakeSec);
                 break;
 
             case REQUEST_TIME:
                 hour = bundle.getInt("hour");
                 min = bundle.getInt("min");
-                changeTime(hour, min);
+                sec = bundle.getInt("sec", 0); // 秒も取得、デフォルト0
+                changeTime(hour, min, sec);
                 break;
         }
     }

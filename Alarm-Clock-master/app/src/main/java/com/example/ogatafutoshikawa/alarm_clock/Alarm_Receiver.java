@@ -38,11 +38,13 @@ public class Alarm_Receiver extends BroadcastReceiver {
         // 常に規定時間を表示させるため、規定時間を渡す
         alarmStopIntent.putExtra("displayHour", standardHour);
         alarmStopIntent.putExtra("displayMin", standardMin);
+        alarmStopIntent.putExtra("displaySec", 0); // 現状では秒は0で固定
         
         // どちらの時間が実際に使われたかの情報も渡す（デバッグ用）
         alarmStopIntent.putExtra("actualAlarmType", shouldUseFakeTime ? "fake" : "standard");
         alarmStopIntent.putExtra("actualHour", shouldUseFakeTime ? fakeHour : standardHour);
         alarmStopIntent.putExtra("actualMin", shouldUseFakeTime ? fakeMin : standardMin);
+        alarmStopIntent.putExtra("actualSec", 0); // 現状では秒は0で固定
         alarmStopIntent.putExtra("forceModeEnabled", forceModeEnabled);
         
         // 新しいタスクとして起動（画面起動に必要）

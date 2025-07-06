@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>目覚まし時計 - アラーム設定</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 400px;
+            width: 100%;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            margin-bottom: 20px;
+        }
+
+        /* タイトル */
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        /* セクション */
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-label {
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+            color: #444;
+        }
+
+        /* ボタンスタイル */
+        .time-button {
+            width: 200px;
+            height: 60px;
+            margin: 0 auto;
+            display: block;
+            font-size: 18px;
+            font-weight: 600;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-button:hover {
+            background-color: #e9ecef;
+            border-color: #007bff;
+        }
+
+        .time-button.set {
+            background-color: #E3F2FD;
+            border-color: #2196F3;
+            color: #1976D2;
+        }
+
+        .time-button.fake {
+            background-color: #FFECB3;
+            border-color: #FF9800;
+            color: #F57C00;
+        }
+
+        /* 強制モード */
+        .force-mode {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .force-mode-label {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #444;
+        }
+
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #FF5722;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .switch-text {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* 確率情報 */
+        .probability-info {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        /* 音声設定 */
+        .audio-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .audio-button {
+            width: 200px;
+            height: 60px;
+            margin: 0 auto 16px;
+            display: block;
+            font-size: 16px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .audio-button:hover {
+            background-color: #5a6268;
+        }
+
+        .audio-name {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* カスタムメッセージ */
+        .custom-message {
+            width: 100%;
+            height: 50px;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .custom-message:focus {
+            border-color: #007bff;
+        }
+
+        /* 確認ボタン */
+        .confirm-button {
+            width: 120px;
+            height: 60px;
+            margin: 0 auto;
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .confirm-button:hover {
+            background-color: #218838;
+        }
+
+        /* アラーム停止画面 */
+        .alarm-stop {
+            background-color: #FF5722;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .alarm-message {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .alarm-time {
+            font-size: 56px;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .alarm-info {
+            font-size: 16px;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .debug-info {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 60px;
+        }
+
+        .stop-button {
+            width: 300px;
+            height: 80px;
+            font-size: 30px;
+            font-weight: bold;
+            background-color: white;
+            color: #FF5722;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .stop-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* 確認画面 */
+        .check-container {
+            margin-top: 20px;
+        }
+
+        .time-display {
+            font-size: 24px;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 16px auto;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .standard-time-display {
+            background-color: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .fake-time-display {
+            background-color: #FFECB3;
+            color: #F57C00;
+        }
+
+        .mode-status {
+            background-color: #f0f0f0;
+            color: #666;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin: 12px auto;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .reset-button {
+            width: 200px;
+            height: 60px;
+            margin: 40px auto 0;
+            display: block;
+            font-size: 18px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background-color: #c82333;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 480px) {
+            .app-container {
+                margin: 10px;
+                padding: 20px 15px;
+            }
+            
+            .alarm-time {
+                font-size: 56px;
+            }
+            
+            .stop-button {
+                width: 250px;
+                height: 70px;
+                font-size: 24px;
+            }
+        }
+
+        /* ナビゲーション */
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+
+        .nav-button.active {
+            background-color: #28a745;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーション -->
+    <div class="nav-buttons">
+        <button class="nav-button active" onclick="showScreen('main')">メイン画面</button>
+        <button class="nav-button" onclick="showScreen('check')">確認画面</button>
+        <button class="nav-button" onclick="showScreen('alarm')">アラーム画面</button>
+    </div>
+
+    <!-- メイン画面 -->
+    <div id="main" class="screen active">
+        <div class="app-container">
+            <h1 class="title">アラーム設定</h1>
+
+            <!-- 規定時間設定 -->
+            <div class="section">
+                <div class="section-label">規定時間</div>
+                <button class="time-button" id="standardTime" onclick="setTime('standard')">---</button>
+            </div>
+
+            <!-- フェイクタイム設定 -->
+            <div class="section">
+                <div class="section-label">フェイクタイム</div>
+                <button class="time-button" id="fakeTime" onclick="setTime('fake')">---</button>
+            </div>
+
+            <!-- 強制モード -->
+            <div class="force-mode">
+                <div class="force-mode-label">フェイクタイム強制モード</div>
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" id="forceModeSwitch" onchange="toggleForceMode()">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="switch-text" id="switchText">強制モード: OFF</span>
+                </div>
+            </div>
+
+            <!-- 確率情報 -->
+            <div class="probability-info" id="probabilityInfo">
+                規定時間: 30% / フェイクタイム: 70%
+            </div>
+
+            <!-- 音声設定 -->
+            <div class="audio-section">
+                <div class="section-label">アラーム音</div>
+                <button class="audio-button" onclick="selectAudio()">音声を選択</button>
+                <div class="audio-name" id="audioName">デフォルト音声</div>
+            </div>
+
+            <!-- カスタムメッセージ -->
+            <input type="text" class="custom-message" placeholder="読み上げたいメッセージを入力" id="customMessage">
+
+            <!-- 確認ボタン -->
+            <button class="confirm-button" onclick="confirmSettings()">OK</button>
+        </div>
+    </div>
+
+    <!-- 確認画面 -->
+    <div id="check" class="screen">
+        <div class="app-container check-container">
+            <h1 class="title">アラーム設定確認</h1>
+
+            <!-- 規定時間表示 -->
+            <div class="section">
+                <div class="section-label">規定時間</div>
+                <div class="time-display standard-time-display" id="checkStandardTime">07:30</div>
+            </div>
+
+            <!-- フェイクタイム表示 -->
+            <div class="section">
+                <div class="section-label">フェイクタイム</div>
+                <div class="time-display fake-time-display" id="checkFakeTime">07:15</div>
+            </div>
+
+            <!-- 強制モード状態 -->
+            <div class="section">
+                <div class="section-label">フェイクタイム強制モード</div>
+                <div class="mode-status" id="checkForceMode">OFF</div>
+            </div>
+
+            <!-- 確率情報 -->
+            <div class="probability-info" id="checkProbabilityInfo">
+                規定時間: 30% / フェイクタイム: 70%
+            </div>
+
+            <!-- リセットボタン -->
+            <button class="reset-button" onclick="resetSettings()">再設定</button>
+        </div>
+    </div>
+
+    <!-- アラーム停止画面 -->
+    <div id="alarm" class="screen">
+        <div class="app-container alarm-stop">
+            <div class="alarm-message">アラーム！</div>
+            <div class="alarm-time" id="alarmTimeDisplay">07:00</div>
+            <div class="alarm-info">規定時間です</div>
+            <div class="debug-info">実際: フェイク(07:15) | 強制: OFF</div>
+            <button class="stop-button" onclick="stopAlarm()">STOP</button>
+        </div>
+    </div>
+
+    <script>
+        // アプリの状態管理
+        let appState = {
+            standardTime: null,
+            fakeTime: null,
+            forceMode: false,
+            audioName: 'デフォルト音声',
+            customMessage: ''
+        };
+
+        // 画面切り替え
+        function showScreen(screenName) {
+            // 全ての画面を非表示
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // 全てのナビボタンを非アクティブ
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // 指定された画面を表示
+            document.getElementById(screenName).classList.add('active');
+            
+            // 対応するナビボタンをアクティブ
+            event.target.classList.add('active');
+        }
+
+        // 時間設定
+        function setTime(type) {
+            const currentTime = new Date();
+            const hours = String(currentTime.getHours()).padStart(2, '0');
+            const minutes = String(currentTime.getMinutes()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
+            
+            if (type === 'standard') {
+                appState.standardTime = timeString;
+                document.getElementById('standardTime').textContent = timeString;
+                document.getElementById('standardTime').classList.add('set');
+            } else if (type === 'fake') {
+                appState.fakeTime = timeString;
+                document.getElementById('fakeTime').textContent = timeString;
+                document.getElementById('fakeTime').classList.add('fake');
+            }
+            
+            updateCheckScreen();
+        }
+
+        // 強制モード切り替え
+        function toggleForceMode() {
+            const isChecked = document.getElementById('forceModeSwitch').checked;
+            appState.forceMode = isChecked;
+            
+            const switchText = document.getElementById('switchText');
+            const probabilityInfo = document.getElementById('probabilityInfo');
+            
+            if (isChecked) {
+                switchText.textContent = '強制モード: ON';
+                probabilityInfo.textContent = 'フェイクタイム: 100%';
+            } else {
+                switchText.textContent = '強制モード: OFF';
+                probabilityInfo.textContent = '規定時間: 30% / フェイクタイム: 70%';
+            }
+            
+            updateCheckScreen();
+        }
+
+        // 音声選択
+        function selectAudio() {
+            const audioFiles = ['デフォルト音声', 'アラーム1.mp3', 'アラーム2.wav', 'カスタム音声.m4a'];
+            const selectedAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+            
+            appState.audioName = selectedAudio;
+            document.getElementById('audioName').textContent = selectedAudio;
+        }
+
+        // 設定確認
+        function confirmSettings() {
+            if (!appState.standardTime || !appState.fakeTime) {
+                alert('規定時間とフェイクタイムの両方を設定してください');
+                return;
+            }
+            
+            appState.customMessage = document.getElementById('customMessage').value;
+            updateCheckScreen();
+            showScreen('check');
+            
+            // ナビボタンを更新
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-button')[1].classList.add('active');
+        }
+
+        // 確認画面更新
+        function updateCheckScreen() {
+            if (appState.standardTime) {
+                document.getElementById('checkStandardTime').textContent = appState.standardTime;
+            }
+            
+            if (appState.fakeTime) {
+                document.getElementById('checkFakeTime').textContent = appState.fakeTime;
+            }
+            
+            document.getElementById('checkForceMode').textContent = appState.forceMode ? 'ON (フェイクタイム100%)' : 'OFF';
+            
+            const checkProbabilityInfo = document.getElementById('checkProbabilityInfo');
+            if (appState.forceMode) {
+                checkProbabilityInfo.textContent = 'フェイクタイム: 100%';
+            } else {
+                checkProbabilityInfo.textContent = '規定時間: 30% / フェイクタイム: 70%';
+            }
+        }
+
+        // 設定リセット
+        function resetSettings() {
+            if (confirm('設定をリセットしますか？')) {
+                appState = {
+                    standardTime: null,
+                    fakeTime: null,
+                    forceMode: false,
+                    audioName: 'デフォルト音声',
+                    customMessage: ''
+                };
+                
+                // UIリセット
+                document.getElementById('standardTime').textContent = '---';
+                document.getElementById('standardTime').classList.remove('set');
+                document.getElementById('fakeTime').textContent = '---';
+                document.getElementById('fakeTime').classList.remove('fake');
+                document.getElementById('forceModeSwitch').checked = false;
+                document.getElementById('switchText').textContent = '強制モード: OFF';
+                document.getElementById('probabilityInfo').textContent = '規定時間: 30% / フェイクタイム: 70%';
+                document.getElementById('audioName').textContent = 'デフォルト音声';
+                document.getElementById('customMessage').value = '';
+                
+                showScreen('main');
+                
+                // ナビボタンを更新
+                document.querySelectorAll('.nav-button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                document.querySelectorAll('.nav-button')[0].classList.add('active');
+            }
+        }
+
+        // アラーム停止
+        function stopAlarm() {
+            alert('アラームを停止しました');
+            showScreen('main');
+            
+            // ナビボタンを更新
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-button')[0].classList.add('active');
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 現在時刻をアラーム画面に表示
+            const currentTime = new Date();
+            const hours = String(currentTime.getHours()).padStart(2, '0');
+            const minutes = String(currentTime.getMinutes()).padStart(2, '0');
+            document.getElementById('alarmTimeDisplay').textContent = `${hours}:${minutes}`;
+        });
+    </script>
+</body>
+</html> 

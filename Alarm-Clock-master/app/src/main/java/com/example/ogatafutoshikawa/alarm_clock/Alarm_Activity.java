@@ -11,7 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.TimePicker;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 import java.util.Calendar;
 import android.widget.RelativeLayout;
@@ -22,7 +22,13 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
     private RelativeLayout mLayout;
     private int hour;
     private int min;
+    private int sec; // 秒を追加
     private String timeType; // "standard" または "fake" を識別するフィールド
+    
+    // NumberPicker用フィールド
+    private NumberPicker hourPicker;
+    private NumberPicker minutePicker;
+    private NumberPicker secondPicker;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
@@ -44,11 +50,57 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
 
         Button btnSet = findViewById(R.id.set);
         Button btnCancel = findViewById(R.id.cancel);
-        TimePicker tPicker = findViewById(R.id.timePicker);
+        
+        // NumberPickerの初期化
+        hourPicker = findViewById(R.id.hourPicker);
+        minutePicker = findViewById(R.id.minutePicker);
+        secondPicker = findViewById(R.id.secondPicker);
 
         btnSet.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
-        tPicker.setIs24HourView(true);
+        
+        // NumberPickerの設定
+        setupNumberPickers();
+    }
+
+    // NumberPickerの設定メソッド
+    private void setupNumberPickers() {
+        // 時（0-23）
+        hourPicker.setMinValue(0);
+        hourPicker.setMaxValue(23);
+        hourPicker.setValue(7); // デフォルト値
+        
+        // 分（0-59）
+        minutePicker.setMinValue(0);
+        minutePicker.setMaxValue(59);
+        minutePicker.setValue(0); // デフォルト値
+        
+        // 秒（0-59）
+        secondPicker.setMinValue(0);
+        secondPicker.setMaxValue(59);
+        secondPicker.setValue(0); // デフォルト値
+        
+        // フォーマット設定（2桁表示）
+        hourPicker.setFormatter(new NumberPicker.Formatter() {
+            @Override
+            public String format(int value) {
+                return String.format("%02d", value);
+            }
+        });
+        
+        minutePicker.setFormatter(new NumberPicker.Formatter() {
+            @Override
+            public String format(int value) {
+                return String.format("%02d", value);
+            }
+        });
+        
+        secondPicker.setFormatter(new NumberPicker.Formatter() {
+            @Override
+            public String format(int value) {
+                return String.format("%02d", value);
+            }
+        });
     }
 
     @Override
@@ -65,16 +117,17 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
         Bundle bundle = new Bundle();
         int id = v.getId();
 
-        TimePicker tPicker = findViewById(R.id.timePicker);
-        hour = tPicker.getCurrentHour();
-        min = tPicker.getCurrentMinute();
+        // NumberPickerから値を取得
+        hour = hourPicker.getValue();
+        min = minutePicker.getValue();
+        sec = secondPicker.getValue();
 
         if (id == R.id.set) {
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(System.currentTimeMillis());
             cal.set(Calendar.HOUR_OF_DAY, hour);
             cal.set(Calendar.MINUTE, min);
-            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.SECOND, sec); // 設定した秒を使用
             cal.set(Calendar.MILLISECOND, 0);
 
             if (cal.getTimeInMillis() < System.currentTimeMillis()) {
@@ -86,6 +139,7 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
 
             bundle.putInt("hour", hour);
             bundle.putInt("min", min);
+            bundle.putInt("sec", sec); // 秒も追加
             intent.putExtras(bundle);
             setResult(RESULT_OK, intent);
             finish();

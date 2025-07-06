@@ -30,9 +30,11 @@ public class Alarm_Stop extends AppCompatActivity
     // 新機能用フィールド
     private int displayHour;
     private int displayMin;
+    private int displaySec; // 秒を追加
     private String actualAlarmType;
     private int actualHour;
     private int actualMin;
+    private int actualSec; // 秒を追加
     private boolean forceModeEnabled;
 
     @Override
@@ -44,14 +46,16 @@ public class Alarm_Stop extends AppCompatActivity
         Intent intent = getIntent();
         displayHour = intent.getIntExtra("displayHour", 0);
         displayMin = intent.getIntExtra("displayMin", 0);
+        displaySec = intent.getIntExtra("displaySec", 0); // 秒も取得
         actualAlarmType = intent.getStringExtra("actualAlarmType");
         actualHour = intent.getIntExtra("actualHour", 0);
         actualMin = intent.getIntExtra("actualMin", 0);
+        actualSec = intent.getIntExtra("actualSec", 0); // 秒も取得
         forceModeEnabled = intent.getBooleanExtra("forceModeEnabled", false);
 
-        Log.d(TAG, "アラーム停止画面開始 - 表示時間: " + displayHour + ":" + displayMin + 
+        Log.d(TAG, "アラーム停止画面開始 - 表示時間: " + displayHour + ":" + displayMin + ":" + displaySec +
                    ", 実際のタイプ: " + actualAlarmType + 
-                   ", 実際の時間: " + actualHour + ":" + actualMin + 
+                   ", 実際の時間: " + actualHour + ":" + actualMin + ":" + actualSec +
                    ", 強制モード: " + forceModeEnabled);
 
         // UI要素の初期化
@@ -65,7 +69,7 @@ public class Alarm_Stop extends AppCompatActivity
     private void initializeUI() {
         // 時間表示（常に規定時間を表示）
         TextView timeDisplay = findViewById(R.id.time_display);
-        String timeText = String.format("%02d:%02d", displayHour, displayMin);
+        String timeText = String.format("%02d:%02d:%02d", displayHour, displayMin, displaySec);
         timeDisplay.setText(timeText);
 
         // アラーム情報表示
@@ -74,9 +78,9 @@ public class Alarm_Stop extends AppCompatActivity
 
         // デバッグ情報表示
         TextView debugInfo = findViewById(R.id.debug_info);
-        String debugText = String.format("実際: %s (%02d:%02d) | 強制: %s", 
+        String debugText = String.format("実際: %s (%02d:%02d:%02d) | 強制: %s", 
                 actualAlarmType != null ? ("fake".equals(actualAlarmType) ? "フェイク" : "規定") : "不明",
-                actualHour, actualMin,
+                actualHour, actualMin, actualSec,
                 forceModeEnabled ? "ON" : "OFF");
         debugInfo.setText(debugText);
 
@@ -156,28 +160,19 @@ public class Alarm_Stop extends AppCompatActivity
     private String generateVoiceMessage(String customMessage) {
         StringBuilder message = new StringBuilder();
         
-        // カスタムメッセージが設定されている場合
+        // カスタムメッセージが設定されている場合（シンプルに名前呼び）
         if (!customMessage.isEmpty()) {
-            message.append(customMessage).append("さん。");
+            message.append(customMessage).append("さん、");
         }
         
-        // フェイクタイム情報に基づいたメッセージ追加
-        if ("fake".equals(actualAlarmType)) {
-            // フェイクタイムが使用された場合
-            if (forceModeEnabled) {
-                message.append("強制モードでフェイクタイムが適用されました。");
-            } else {
-                message.append("今回はフェイクタイムでした。");
-            }
-            message.append(String.format("実際の時間は%02d時%02d分です。", actualHour, actualMin));
-        } else {
-            // 規定時間が使用された場合
-            message.append("今回は規定時間でした。");
-            message.append(String.format("設定通り%02d時%02d分に起こしました。", actualHour, actualMin));
-        }
-        
-        // 基本的な起床メッセージ
+        // 基本的な起床メッセージ（メイン）
         message.append("おはようございます。起きる時間です。");
+        
+        // フェイクタイム情報は控えめに追加（詳細はデバッグ表示のみ）
+        if ("fake".equals(actualAlarmType) && !forceModeEnabled) {
+            // 通常のフェイクタイムの場合のみ、さりげなく伝える
+            message.append("今日も良い一日をお過ごしください。");
+        }
         
         return message.toString();
     }
