@@ -11,13 +11,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Switch;
+import android.widget.EditText;
 
 public class Main_Activity extends AppCompatActivity implements View.OnClickListener {
 
     // データ受け渡しの際に使うkey
     public static final int REQUEST_TIME = 0;
-    public static final int REQUEST_PREFECTURE = 1;
-    public static final int REQUEST_CITY = 2;
     public static final int REQUEST_AUDIO = 3;
     public static final int REQUEST_STANDARD_TIME = 4;
     public static final int REQUEST_FAKE_TIME = 5;
@@ -25,8 +24,6 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
     public static final String PRE_NUM = "num";
     public static final String HOUR_DATA = "0";
     public static final String MIN_DATA = "1";
-    public static final String PREFECTURE_DATA = "prefecture";
-    public static final String CITY_DATA = "city";
     
     // 新機能用データキー
     public static final String STANDARD_HOUR_DATA = "standard_hour";
@@ -36,13 +33,6 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
     public static final String FORCE_MODE_DATA = "force_mode";
 
     // 変数宣言
-    private String pre_str = null;
-    private String city_str = null;
-    private String save_pre = null;
-    private String pre_key = null;
-    private String city_key = null;
-    private String place_key = null;
-    private int pre_num = 0;
     private int hour = 100;
     private int min = 100;
     private String selectedAudioName = "デフォルト音声"; // 選択された音声名を保持
@@ -53,6 +43,7 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
     private int fakeHour = 100;
     private int fakeMin = 100;
     private boolean forceModeEnabled = false;
+    private String customMessage = ""; // カスタムメッセージ用変数
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,16 +54,15 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
         Button btnStandardTime = findViewById(R.id.standard_time);
         Button btnFakeTime = findViewById(R.id.fake_time);
         Switch forceModeSwitch = findViewById(R.id.force_mode_switch);
-        //Button btnPrefecture = findViewById(R.id.prefecture);
-        //Button btnCity = findViewById(R.id.city);
+
         Button btnCheack = findViewById(R.id.cheack);
         Button btnAudio = findViewById(R.id.audio_select);
+        EditText customMessageEditText = findViewById(R.id.customMessageEditText);
 
         // 各ボタンのクリックリスナー設定
         btnStandardTime.setOnClickListener(this);
         btnFakeTime.setOnClickListener(this);
-        //btnPrefecture.setOnClickListener(this);
-        //btnCity.setOnClickListener(this);
+
         btnCheack.setOnClickListener(this);
         btnAudio.setOnClickListener(this);
 
@@ -89,6 +79,12 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
         
         // 保存された時間設定を読み込んで表示
         loadTimeSettings();
+        
+        // カスタムメッセージの読み込みと設定
+        loadCustomMessage(customMessageEditText);
+        
+        // カスタムメッセージ入力の変更監視
+        setupCustomMessageListener(customMessageEditText);
     }
 
     // 保存された音声名を読み込む
@@ -136,6 +132,32 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
                 .apply();
     }
 
+    // カスタムメッセージを読み込む
+    private void loadCustomMessage(EditText customMessageEditText) {
+        SharedPreferences prefs = getSharedPreferences("AlarmPrefs", MODE_PRIVATE);
+        customMessage = prefs.getString("customMessage", "");
+        customMessageEditText.setText(customMessage);
+    }
+
+    // カスタムメッセージの変更監視を設定
+    private void setupCustomMessageListener(EditText customMessageEditText) {
+        customMessageEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                // フォーカスが外れた時にカスタムメッセージを保存
+                saveCustomMessage(customMessageEditText.getText().toString());
+            }
+        });
+    }
+
+    // カスタムメッセージを保存
+    private void saveCustomMessage(String message) {
+        customMessage = message;
+        SharedPreferences prefs = getSharedPreferences("AlarmPrefs", MODE_PRIVATE);
+        prefs.edit()
+                .putString("customMessage", customMessage)
+                .apply();
+    }
+
     @SuppressLint("SetTextI18n")
     public void changeTime(int hour, int min) {
         TextView tv = findViewById(R.id.time);
@@ -160,15 +182,7 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
         btn.setText(hspace + hour + ":" + mspace + min);
     }
 
-    /*public void changePrefecture(String str) {
-        TextView tv = findViewById(R.id.prefecture);
-        tv.setText(str);
-    }
 
-    public void changeCity(String str) {
-        TextView tv = findViewById(R.id.city);
-        tv.setText(str);
-    }*/
 
     // 選択された音声名を表示
     private void changeAudioName(String name) {
@@ -191,33 +205,23 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
             Intent intent = new Intent(this, Alarm_Activity.class);
             intent.putExtra("time_type", "fake");
             startActivityForResult(intent, REQUEST_FAKE_TIME);
-        } /*else if (id == R.id.prefecture) {
-            Intent intent = new Intent(this, Prefecture_Activity.class);
-            startActivityForResult(intent, REQUEST_PREFECTURE);
-        } else if (id == R.id.city) {
-            if (pre_num != 0) {
-                Intent intent = new Intent(this, City_Activity.class);
-                intent.putExtra(PRE_NUM, pre_num);
-                startActivityForResult(intent, REQUEST_CITY);
-            } else {
-                Toast.makeText(this, "まず都道府県を選択してください", Toast.LENGTH_SHORT).show();
-            }
-        } */else if (id == R.id.audio_select) {
+        } else if (id == R.id.audio_select) {
             Intent intent = new Intent(this, AudioSelectActivity.class);
             startActivityForResult(intent, REQUEST_AUDIO);
         } else if (id == R.id.cheack) {
             if (standardHour < 100 && standardMin < 100 && fakeHour < 100 && fakeMin < 100) {
-                place_key = pre_key + city_key;
-
                 Intent intent = new Intent(this, Check_Activity.class);
                 intent.putExtra(STANDARD_HOUR_DATA, standardHour);
                 intent.putExtra(STANDARD_MIN_DATA, standardMin);
                 intent.putExtra(FAKE_HOUR_DATA, fakeHour);
                 intent.putExtra(FAKE_MIN_DATA, fakeMin);
                 intent.putExtra(FORCE_MODE_DATA, forceModeEnabled);
-                /*intent.putExtra(PREFECTURE_DATA, pre_str);
-                intent.putExtra(CITY_DATA, city_str);*/
                 intent.putExtra("audio_name", selectedAudioName); // 音声名を渡す
+                
+                // カスタムメッセージも保存してから渡す
+                EditText customMessageEditText = findViewById(R.id.customMessageEditText);
+                saveCustomMessage(customMessageEditText.getText().toString());
+                intent.putExtra("custom_message", customMessage); // カスタムメッセージを渡す
 
                 // 設定を保存
                 saveTimeSettings();
@@ -227,8 +231,6 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
                 String message = "設定されていない項目: ";
                 if (standardHour >= 100 || standardMin >= 100) message += "規定時間 ";
                 if (fakeHour >= 100 || fakeMin >= 100) message += "フェイクタイム ";
-                /*if (pre_str == null) message += "都道府県 ";
-                if (city_str == null) message += "市区町村";*/
 
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             }
@@ -249,8 +251,17 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
 
         // 音声設定を保存
         editor.putString("alarm_sound_name", selectedAudioName);
-
+        
+        // カスタムメッセージを保存（両方のSharedPreferencesに保存）
+        editor.putString("customMessage", customMessage);
+        
         editor.apply();
+        
+        // AlarmPrefsにもカスタムメッセージを保存（Alarm_Stopで使用）
+        SharedPreferences alarmPrefs = getSharedPreferences("AlarmPrefs", MODE_PRIVATE);
+        alarmPrefs.edit()
+                .putString("customMessage", customMessage)
+                .apply();
     }
 
     @Override
@@ -282,24 +293,6 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
         if (bundle == null) return;
 
         switch (requestCode) {
-            /*case REQUEST_PREFECTURE:
-                pre_str = bundle.getString("prefecture");
-                pre_key = bundle.getString("pre_key");
-                pre_num = bundle.getInt("pre_num");
-                changePrefecture(pre_str);
-                if (save_pre == null || !save_pre.equals(pre_str)) {
-                    city_str = null; // 都道府県が変わったら市区町村をリセット
-                    changeCity("---");
-                }
-                save_pre = pre_str;
-                break;
-
-            case REQUEST_CITY:
-                city_str = bundle.getString("city");
-                city_key = bundle.getString("city_key");
-                changeCity(city_str);
-                break;*/
-
             case REQUEST_STANDARD_TIME:
                 standardHour = bundle.getInt("hour");
                 standardMin = bundle.getInt("min");

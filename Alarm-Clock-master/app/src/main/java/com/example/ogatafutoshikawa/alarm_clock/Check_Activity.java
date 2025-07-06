@@ -47,8 +47,6 @@ public class Check_Activity extends AppCompatActivity {
         // 旧機能: 単一時間設定（後方互換性のため保持）
         int get_hour = intent.getIntExtra(Main_Activity.HOUR_DATA, 0);
         int get_min = intent.getIntExtra(Main_Activity.MIN_DATA, 0);
-        //String get_prefecture = intent.getStringExtra(Main_Activity.PREFECTURE_DATA);
-        //String get_city = intent.getStringExtra(Main_Activity.CITY_DATA);
 
         // UI要素の取得
         TextView standardTimeDisplay = findViewById(R.id.standard_time_display);
@@ -89,8 +87,7 @@ public class Check_Activity extends AppCompatActivity {
             }
         });
 
-        //changePre(get_prefecture);
-        //changeCity(get_city);
+
         // 後方互換性のため（使用されない場合は何もしない）
         if (get_hour != 0 || get_min != 0) {
             changeTime2(get_hour, get_min);
@@ -110,23 +107,7 @@ public class Check_Activity extends AppCompatActivity {
         tv.setText(hspace + h + ":" + mspace + m);
     }
 
-    /**
-     *
-     * @param str
-     */
-    /*public void changePre(String str) {
-        TextView tv = findViewById(R.id.prefecture2);
-        tv.setText(str);
-    }*/
 
-    /**
-     *
-     * @param str
-     */
-    /*public void changeCity(String str) {
-        TextView tv = findViewById(R.id.city2);
-        tv.setText(str);
-    }*/
 
     // 時間を表示する共通メソッド
     @SuppressLint("SetTextI18n")
