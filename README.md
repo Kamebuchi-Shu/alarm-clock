@@ -1,5 +1,5 @@
 # alarm-clock
-branch sound　　
+branch sound merge ikeda　　
 創成デザイン用のリポジトリ
 
 # Licence
