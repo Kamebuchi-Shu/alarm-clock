@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- タイトル -->
+        <TextView
+            android:id="@+id/debug_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="デバッグ画面"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- 現在時刻 -->
+        <TextView
+            android:id="@+id/current_time_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="現在時刻: --:--:--"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="#E3F2FD"
+            android:padding="12dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/debug_title" />
+
+        <!-- 設定時間表示セクション -->
+        <TextView
+            android:id="@+id/time_settings_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="設定時間"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/current_time_display" />
+
+        <TextView
+            android:id="@+id/standard_time_debug"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="規定時間: 未設定"
+            android:textSize="16sp"
+            android:background="#FFECB3"
+            android:padding="8dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/time_settings_label" />
+
+        <TextView
+            android:id="@+id/fake_time_debug"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="フェイクタイム: 未設定"
+            android:textSize="16sp"
+            android:background="#FFCCBC"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/standard_time_debug" />
+
+        <!-- アラーム状態セクション -->
+        <TextView
+            android:id="@+id/alarm_status_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="アラーム設定状態"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fake_time_debug" />
+
+        <TextView
+            android:id="@+id/standard_alarm_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="規定時間アラーム: 未設定"
+            android:textSize="16sp"
+            android:background="#C8E6C9"
+            android:padding="8dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/alarm_status_label" />
+
+        <TextView
+            android:id="@+id/fake_alarm_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="フェイクタイムアラーム: 未設定"
+            android:textSize="16sp"
+            android:background="#FFCDD2"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/standard_alarm_status" />
+
+        <!-- カウントダウンセクション -->
+        <TextView
+            android:id="@+id/countdown_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="残り時間"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fake_alarm_status" />
+
+        <TextView
+            android:id="@+id/standard_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="規定時間まで: --時間--分--秒"
+            android:textSize="16sp"
+            android:background="#E1F5FE"
+            android:padding="8dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/countdown_label" />
+
+        <TextView
+            android:id="@+id/fake_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="フェイクタイムまで: --時間--分--秒"
+            android:textSize="16sp"
+            android:background="#FFF3E0"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/standard_countdown" />
+
+        <!-- その他の設定情報セクション -->
+        <TextView
+            android:id="@+id/other_settings_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="その他の設定"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fake_countdown" />
+
+        <TextView
+            android:id="@+id/force_mode_debug"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="強制モード: OFF"
+            android:textSize="16sp"
+            android:background="#F3E5F5"
+            android:padding="8dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/other_settings_label" />
+
+        <TextView
+            android:id="@+id/audio_name_debug"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="選択音声: デフォルト音声"
+            android:textSize="16sp"
+            android:background="#E8F5E8"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/force_mode_debug" />
+
+        <TextView
+            android:id="@+id/custom_message_debug"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="カスタムメッセージ: 未設定"
+            android:textSize="16sp"
+            android:background="#FFF8E1"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/audio_name_debug" />
+
+        <!-- テストボタンセクション -->
+        <TextView
+            android:id="@+id/test_buttons_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="アラームテスト"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/custom_message_debug" />
+
+        <Button
+            android:id="@+id/test_standard_alarm"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:text="規定時間アラーム テスト"
+            android:textSize="14sp"
+            android:background="#4CAF50"
+            android:textColor="white"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/test_buttons_label" />
+
+        <Button
+            android:id="@+id/test_fake_alarm"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:text="フェイクタイム アラーム テスト"
+            android:textSize="14sp"
+            android:background="#FF9800"
+            android:textColor="white"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/test_standard_alarm" />
+
+        <!-- 戻るボタン -->
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:text="戻る"
+            android:textSize="18sp"
+            android:background="#757575"
+            android:textColor="white"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/test_fake_alarm"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView> 
