@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent">
+
+<android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     tools:context="com.example.ogatafutoshikawa.alarm_clock.Main_Activity"
     tools:layout_editor_absoluteY="81dp"
     tools:layout_editor_absoluteX="0dp">
@@ -202,7 +205,7 @@
         android:text="デバッグ画面"
         android:textSize="16sp"
         android:background="#2196F3"
-        android:textColor="white"
+        android:textColor="#FFFFFF"
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -221,3 +224,4 @@
         app:layout_constraintTop_toBottomOf="@+id/debug_button" />
 
 </android.support.constraint.ConstraintLayout>
+</ScrollView>
