@@ -48,9 +48,7 @@ public class Check_Activity extends AppCompatActivity {
         fakeSec = intent.getIntExtra("fake_sec", 0); // 秒も取得
         forceModeEnabled = intent.getBooleanExtra(Main_Activity.FORCE_MODE_DATA, false);
 
-        // 旧機能: 単一時間設定（後方互換性のため保持）
-        int get_hour = intent.getIntExtra(Main_Activity.HOUR_DATA, 0);
-        int get_min = intent.getIntExtra(Main_Activity.MIN_DATA, 0);
+
 
         // UI要素の取得
         TextView standardTimeDisplay = findViewById(R.id.standard_time_display);
@@ -90,28 +88,7 @@ public class Check_Activity extends AppCompatActivity {
                 finish();
             }
         });
-
-
-        // 後方互換性のため（使用されない場合は何もしない）
-        if (get_hour != 0 || get_min != 0) {
-            changeTime2(get_hour, get_min);
-        }
     }
-
-    /**
-     *
-     * @param h
-     * @param m
-     */
-    @SuppressLint("SetTextI18n")
-    public void changeTime2(int h, int m){
-        String hspace = h < 10 ? "0" : "";
-        String mspace = m < 10 ? "0" : "";
-        TextView tv = findViewById(R.id.time2);
-        tv.setText(hspace + h + ":" + mspace + m);
-    }
-
-
 
     // 時間を表示する共通メソッド
     @SuppressLint("SetTextI18n")

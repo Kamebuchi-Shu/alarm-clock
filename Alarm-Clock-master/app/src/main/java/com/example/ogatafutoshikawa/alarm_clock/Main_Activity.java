@@ -16,14 +16,9 @@ import android.widget.EditText;
 public class Main_Activity extends AppCompatActivity implements View.OnClickListener {
 
     // データ受け渡しの際に使うkey
-    public static final int REQUEST_TIME = 0;
     public static final int REQUEST_AUDIO = 3;
     public static final int REQUEST_STANDARD_TIME = 4;
     public static final int REQUEST_FAKE_TIME = 5;
-
-    public static final String PRE_NUM = "num";
-    public static final String HOUR_DATA = "0";
-    public static final String MIN_DATA = "1";
     
     // 新機能用データキー
     public static final String STANDARD_HOUR_DATA = "standard_hour";
@@ -33,9 +28,6 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
     public static final String FORCE_MODE_DATA = "force_mode";
 
     // 変数宣言
-    private int hour = 100;
-    private int min = 100;
-    private int sec = 100; // 秒を追加
     private String selectedAudioName = "デフォルト音声"; // 選択された音声名を保持
     
     // 新機能用変数
@@ -163,14 +155,7 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
                 .apply();
     }
 
-    @SuppressLint("SetTextI18n")
-    public void changeTime(int hour, int min, int sec) {
-        TextView tv = findViewById(R.id.time);
-        String hspace = hour < 10 ? "0" : "";
-        String mspace = min < 10 ? "0" : "";
-        String sspace = sec < 10 ? "0" : "";
-        tv.setText(hspace + hour + ":" + mspace + min + ":" + sspace + sec);
-    }
+
 
     @SuppressLint("SetTextI18n")
     public void changeStandardTime(int hour, int min, int sec) {
@@ -320,12 +305,7 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
                 changeFakeTime(fakeHour, fakeMin, fakeSec);
                 break;
 
-            case REQUEST_TIME:
-                hour = bundle.getInt("hour");
-                min = bundle.getInt("min");
-                sec = bundle.getInt("sec", 0); // 秒も取得、デフォルト0
-                changeTime(hour, min, sec);
-                break;
+
         }
     }
 }
