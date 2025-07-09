@@ -1,78 +1,28 @@
 <resources>
     <string name="app_name">目覚まし時計</string>
-    <string name="weather_title"> </string>
-    <string name="show_weather">天気を表示</string>
     <string name="todo">やること</string>
     <string name="set">セット</string>
     <string name="cancel">解　除</string>
     <string name="time">時間</string>
-    <string name="place">場所</string>
-    <string name="prefecture">県名</string>
-    <string name="city">市名</string>
     <string name="OK">OK</string>
     <string name="stop">STOP</string>
     <string name="reset">再設定</string>
     <string name="Space">---</string>
     <string name="Time">00:00</string>
-    <string name="Read">READ</string>
 
-    <string name="Hokkaido">北海道</string>
 
-    <string name="Aomori">青森県</string>
-    <string name="Iwate">岩手県</string>
-    <string name="Miyagi">宮城県</string>
-    <string name="Akita">秋田県</string>
-    <string name="Yamagata">山形県</string>
-    <string name="Fukushima">福島県</string>
-
-    <string name="Tokyo">東京都</string>
-    <string name="Kanagawa">神奈川県</string>
-    <string name="Saitama">埼玉県</string>
-    <string name="Chiba">千葉県</string>
-    <string name="Ibaraki">茨城県</string>
-    <string name="Tochigi">栃木県</string>
-    <string name="Gunma">群馬県</string>
-    <string name="Yamanashi">山梨県</string>
-
-    <string name="Nigata">新潟県</string>
-    <string name="Nagano">長野県</string>
-    <string name="Toyama">富山県</string>
-    <string name="Ishikawa">石川県</string>
-    <string name="Fukui">福井県</string>
-
-    <string name="Aichi">愛知県</string>
-    <string name="Gifu">岐阜県</string>
-    <string name="Shizuoka">静岡県</string>
-    <string name="Mie">三重県</string>
-
-    <string name="Osaka">大阪府</string>
-    <string name="Hyogo">兵庫県</string>
-    <string name="Kyoto">京都府</string>
-    <string name="Shiga">滋賀県</string>
-    <string name="Nara">奈良県</string>
-    <string name="Wakayama">和歌山県</string>
-
-    <string name="Totori">鳥取県</string>
-    <string name="Shimane">島根県</string>
-    <string name="Okayama">岡山県</string>
-    <string name="Hiroshima">広島県</string>
-    <string name="Yamaguchi">山口県</string>
-
-    <string name="Tokushima">徳島県</string>
-    <string name="Kagawa">香川県</string>
-    <string name="Ehime">愛媛県</string>
-    <string name="Kouchi">高知県</string>
-
-    <string name="Fukuoka">福岡県</string>
-    <string name="Oita">大分県</string>
-    <string name="Nagasaki">長崎県</string>
-    <string name="Saga">佐賀県</string>
-    <string name="Kumamoto">熊本県</string>
-    <string name="Miyazaki">宮城県</string>
-    <string name="Kagoshima">鹿児島県</string>
-
-    <string name="Okinawa">沖縄県</string>
     <string name="audio_select_title">音声選択</string>
 
     <string name="hello">おはようございます</string>
+    
+    <!-- フェイクタイム用新機能用文字列リソース -->
+    <string name="standard_time">規定時間</string>
+    <string name="fake_time">フェイクタイム</string>
+    <string name="fake_time_force_mode">フェイクタイム強制モード</string>
+    <string name="alarm_type_setting">アラーム設定</string>
+    <string name="probability_info">規定時間30% / フェイクタイム70%</string>
+    <string name="force_mode_on">強制モード: ON</string>
+    <string name="force_mode_off">強制モード: OFF</string>
+    <string name="standard_time_set">規定時間設定</string>
+    <string name="fake_time_set">フェイクタイム設定</string>
 </resources>

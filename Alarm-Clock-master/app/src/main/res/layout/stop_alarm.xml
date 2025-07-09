@@ -8,30 +8,93 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#FF5722"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".Alarm_Stop">
 
+    <!-- アラームメッセージ -->
+    <TextView
+        android:id="@+id/alarm_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="アラーム！"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 時間表示 -->
+    <TextView
+        android:id="@+id/time_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="07:00:00"
+        android:textSize="56sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:background="#FFFFFF30"
+        android:padding="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/alarm_message" />
+
+    <!-- アラーム情報 -->
+    <TextView
+        android:id="@+id/alarm_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="規定時間です"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:background="#00000050"
+        android:padding="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time_display" />
+
+    <!-- デバッグ情報（開発用） -->
+    <TextView
+        android:id="@+id/debug_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Debug: 実際のアラーム情報"
+        android:textSize="12sp"
+        android:textColor="#FFFFFF80"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/alarm_info" />
+
+    <!-- TimePickerを非表示にして位置を調整 -->
     <TimePicker
         android:id="@+id/timePicker"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
+    <!-- 停止ボタン -->
     <Button
         android:id="@+id/stop"
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="340dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="400dp"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="60dp"
         android:text="@string/stop"
         android:textSize="30sp"
+        android:textStyle="bold"
+        android:background="#FFFFFF"
+        android:textColor="#FF5722"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/debug_info" />
 
 </android.support.constraint.ConstraintLayout>
