@@ -106,8 +106,9 @@ public class DebugActivity extends AppCompatActivity {
         currentTimeDisplay.setText("現在時刻: " + sdf.format(new Date()));
 
         // 設定時間の表示
-        standardTimeDisplay.setText("規定時間: " + formatTime(standardHour, standardMin, standardSec));
         fakeTimeDisplay.setText("フェイクタイム: " + formatTime(fakeHour, fakeMin, fakeSec));
+        standardTimeDisplay.setText("規定時間: " + formatTime(standardHour, standardMin, standardSec));
+       
 
         // 強制モードの表示
         forceModeDisplay.setText("強制モード: " + (forceModeEnabled ? "ON" : "OFF"));
