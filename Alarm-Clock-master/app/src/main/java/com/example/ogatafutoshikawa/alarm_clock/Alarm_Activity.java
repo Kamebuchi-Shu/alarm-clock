@@ -103,6 +103,8 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
+
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mInputMethodManager.hideSoftInputFromWindow(mLayout.getWindowToken(),
@@ -121,6 +123,7 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
         hour = hourPicker.getValue();
         min = minutePicker.getValue();
         sec = secondPicker.getValue();
+
 
         if (id == R.id.set) {
             Calendar cal = Calendar.getInstance();
@@ -142,6 +145,7 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
             bundle.putInt("sec", sec); // 秒も追加
             intent.putExtras(bundle);
             setResult(RESULT_OK, intent);
+
             finish();
         } else if (id == R.id.cancel) {
             finish();

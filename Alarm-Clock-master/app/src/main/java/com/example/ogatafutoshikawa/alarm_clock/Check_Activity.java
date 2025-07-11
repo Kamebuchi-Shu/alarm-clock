@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Calendar;
+
 
 public class Check_Activity extends AppCompatActivity {
 
@@ -48,7 +50,31 @@ public class Check_Activity extends AppCompatActivity {
         fakeSec = intent.getIntExtra("fake_sec", 0); // 秒も取得
         forceModeEnabled = intent.getBooleanExtra(Main_Activity.FORCE_MODE_DATA, false);
 
+        // 1. 規定時間とフェイクタイムをCalendarオブジェクトに変換
+        Calendar standardCal = Calendar.getInstance();
+        standardCal.set(Calendar.HOUR_OF_DAY, standardHour);
+        standardCal.set(Calendar.MINUTE, standardMin);
+        standardCal.set(Calendar.SECOND, standardSec);
+        standardCal.set(Calendar.MILLISECOND, 0);
+        long standardTimeMillis = standardCal.getTimeInMillis();
 
+        Calendar fakeCal = Calendar.getInstance();
+        fakeCal.set(Calendar.HOUR_OF_DAY, fakeHour);
+        fakeCal.set(Calendar.MINUTE, fakeMin);
+        fakeCal.set(Calendar.SECOND, fakeSec);
+        fakeCal.set(Calendar.MILLISECOND, 0);
+        long fakeTimeMillis = fakeCal.getTimeInMillis();
+
+        // 2. 2つの時刻の範囲を決定 (どちらが先でも良いように)
+        long startTime = Math.min(standardTimeMillis, fakeTimeMillis);
+        long endTime = Math.max(standardTimeMillis, fakeTimeMillis);
+
+        // 3. 範囲内でランダムな時刻をミリ秒単位で生成
+        long randomTimeMillis = startTime + (long) (Math.random() * (endTime - startTime));
+
+        // 4. 生成したランダムな時刻をCalendarオブジェクトに設定
+        Calendar alarmTime = Calendar.getInstance();
+        alarmTime.setTimeInMillis(randomTimeMillis);
 
         // UI要素の取得
         TextView standardTimeDisplay = findViewById(R.id.standard_time_display);
@@ -74,10 +100,56 @@ public class Check_Activity extends AppCompatActivity {
         int fakeRequestCode = fakeHour * 1000 + fakeMin + 10000;
 
         // 標準時間のアラーム設定
-        setupAlarm(standardHour, standardMin, standardSec, standardRequestCode, "standard");
+        //setupAlarm(standardHour, standardMin, standardSec, requestCode, "standard");
         
         // フェイクタイムのアラーム設定
-        setupAlarm(fakeHour, fakeMin, fakeSec, fakeRequestCode, "fake");
+        //setupAlarm(fakeHour, fakeMin, fakeSec, requestCode, "fake");
+
+        // 過去の時刻になった場合は翌日に設定
+        if (alarmTime.getTimeInMillis() <= System.currentTimeMillis()) {
+            alarmTime.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        // CalendarからDateオブジェクトに変換して、見やすい形式でログ出力
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPAN);
+        Log.d("AlarmDebug", "--- アラーム設定デバッグ ---");
+        Log.d("AlarmDebug", "規定時刻: " + standardHour + ":" + standardMin + ":" + standardSec);
+        Log.d("AlarmDebug", "フェイク時刻: " + fakeHour + ":" + fakeMin + ":" + fakeSec);
+        Log.d("AlarmDebug", "計算されたランダム時刻: " + sdf.format(alarmTime.getTime()));
+
+        Intent bootIntent = new Intent(Check_Activity.this, Alarm_Receiver.class);
+
+        // 表示用には「規定時刻」を渡す
+        bootIntent.putExtra("displayHour", standardHour);
+        bootIntent.putExtra("displayMin", standardMin);
+        bootIntent.putExtra("displaySec", standardSec);
+
+        // --- ▼▼▼ デバッグ用のログを追加 ▼▼▼ ---
+        Log.d("AlarmDebug", "Intentに詰めた表示用の時刻: " + standardHour + ":" + standardMin + ":" + standardSec);
+        Log.d("AlarmDebug", "--------------------------");
+
+        int requestCode = 12345;
+
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(
+                Check_Activity.this,
+                requestCode,
+                bootIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        // ★実際にアラームを鳴らすのは、計算した「ランダムな時刻（alarmTime）」
+        alarm.set(
+                AlarmManager.RTC_WAKEUP,
+                alarmTime.getTimeInMillis(),
+                alarmIntent
+        );
+
+        // 画面の表示は「規定時刻」のままにしておく
+        standardTimeDisplay = findViewById(R.id.standard_time_display);
+        displayTime(standardTimeDisplay, standardHour, standardMin, standardSec);
+
 
         Button btnReset = this.findViewById(R.id.reset);
         btnReset.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +160,8 @@ public class Check_Activity extends AppCompatActivity {
                 finish();
             }
         });
+
+
     }
 
     // 時間を表示する共通メソッド
