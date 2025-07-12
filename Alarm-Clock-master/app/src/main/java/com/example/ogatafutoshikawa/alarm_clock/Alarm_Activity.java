@@ -103,8 +103,6 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
-
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mInputMethodManager.hideSoftInputFromWindow(mLayout.getWindowToken(),
@@ -139,7 +137,6 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
 
             // 音声設定を保存
             saveAlarmWithSound();
-
             bundle.putInt("hour", hour);
             bundle.putInt("min", min);
             bundle.putInt("sec", sec); // 秒も追加
