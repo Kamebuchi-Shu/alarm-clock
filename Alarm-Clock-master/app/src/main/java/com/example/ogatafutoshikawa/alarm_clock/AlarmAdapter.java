@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 import java.util.List;
@@ -13,6 +14,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     private List<AlarmData> alarmList;
     private OnAlarmClickListener onAlarmClickListener;
     private OnAlarmToggleListener onAlarmToggleListener;
+    private OnDeleteClickListener onDeleteClickListener;
 
     // インターフェース定義
     public interface OnAlarmClickListener {
@@ -21,6 +23,10 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
     public interface OnAlarmToggleListener {
         void onAlarmToggle(AlarmData alarm, int position, boolean isEnabled);
+    }
+
+    public interface OnDeleteClickListener {
+        void onDeleteClick(AlarmData alarm, int position);
     }
 
     // コンストラクタ
@@ -35,6 +41,10 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
     public void setOnAlarmToggleListener(OnAlarmToggleListener listener) {
         this.onAlarmToggleListener = listener;
+    }
+
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.onDeleteClickListener = listener;
     }
 
     @Override
@@ -81,7 +91,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     public class AlarmViewHolder extends RecyclerView.ViewHolder {
         private TextView standardTimeText;
         private TextView fakeTimeText;
-        private TextView daysText;
+        private TextView forceModeText;
+        private Button deleteButton;
         private Switch alarmSwitch;
         private View itemView;
 
@@ -91,15 +102,18 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             
             standardTimeText = itemView.findViewById(R.id.standard_time_text);
             fakeTimeText = itemView.findViewById(R.id.fake_time_text);
-            daysText = itemView.findViewById(R.id.days_text);
+            forceModeText = itemView.findViewById(R.id.force_mode_text);
+            deleteButton = itemView.findViewById(R.id.delete_button);
             alarmSwitch = itemView.findViewById(R.id.alarm_switch);
         }
 
         public void bind(AlarmData alarm, int position) {
             // 時間表示
-            standardTimeText.setText(alarm.getStandardTimeString());
-            fakeTimeText.setText(alarm.getFakeTimeString());
-            daysText.setText(alarm.getDaysString());
+            standardTimeText.setText(alarm.getStandardTimeString() + " : 規定時間");
+            fakeTimeText.setText(alarm.getFakeTimeString() + " : フェイクタイム");
+            
+            // 強制モード表示
+            forceModeText.setText("強制:" + (alarm.isForceModeEnabled() ? "ON" : "OFF"));
 
             // スイッチの状態設定
             alarmSwitch.setOnCheckedChangeListener(null); // 一時的にリスナーを無効化
@@ -116,6 +130,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                 }
             });
 
+            // 削除ボタンのリスナー設定
+            deleteButton.setOnClickListener(v -> {
+                if (onDeleteClickListener != null) {
+                    onDeleteClickListener.onDeleteClick(alarm, position);
+                }
+            });
+
             // アイテムクリックリスナー設定
             itemView.setOnClickListener(v -> {
                 if (onAlarmClickListener != null) {
@@ -127,7 +148,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             float alpha = alarm.isEnabled() ? 1.0f : 0.5f;
             standardTimeText.setAlpha(alpha);
             fakeTimeText.setAlpha(alpha);
-            daysText.setAlpha(alpha);
+            forceModeText.setAlpha(alpha);
         }
     }
 } 

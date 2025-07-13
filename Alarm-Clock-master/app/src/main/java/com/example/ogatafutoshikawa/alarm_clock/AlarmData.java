@@ -26,7 +26,7 @@ public class AlarmData {
         this.fakeMin = 45;
         this.fakeSec = 0;
         this.days = new boolean[7]; // 全て false で初期化
-        this.isEnabled = false;
+        this.isEnabled = true;  // デフォルトでONに変更
         this.audioName = "デフォルト音声";
         this.customMessage = "";
         this.forceModeEnabled = false;

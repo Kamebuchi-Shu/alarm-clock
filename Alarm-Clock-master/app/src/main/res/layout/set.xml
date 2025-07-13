@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
 <android.support.constraint.ConstraintLayout
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context="com.example.ogatafutoshikawa.alarm_clock.Main_Activity"

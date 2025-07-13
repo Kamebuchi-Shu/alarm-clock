@@ -14,6 +14,10 @@ import android.widget.Toast;
 import android.speech.tts.TextToSpeech;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.util.List;
 
 public class Alarm_Stop extends AppCompatActivity
                         implements View.OnClickListener{
@@ -108,8 +112,7 @@ public class Alarm_Stop extends AppCompatActivity
     }
 
     private void startVoiceReading() {
-        SharedPreferences prefs = getSharedPreferences("AlarmPrefs", MODE_PRIVATE);
-        String customMessage = prefs.getString("customMessage", "");
+        String customMessage = getCustomMessageFromAlarmList();
         
         // フェイクタイム情報に基づいてメッセージを生成
         String voiceMessage = generateVoiceMessage(customMessage);
@@ -142,6 +145,37 @@ public class Alarm_Stop extends AppCompatActivity
                 }
             };
             handler.post(speakRunnable);
+        }
+    }
+
+    private String getCustomMessageFromAlarmList() {
+        try {
+            // アラーム一覧のデータを読み込み
+            SharedPreferences prefs = getSharedPreferences("alarm_list_prefs", MODE_PRIVATE);
+            String jsonString = prefs.getString("alarm_list", "[]");
+            
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<AlarmData>>(){}.getType();
+            List<AlarmData> alarmList = gson.fromJson(jsonString, listType);
+            
+            if (alarmList != null) {
+                // 現在のアラーム時間に一致するアラームを検索
+                for (AlarmData alarm : alarmList) {
+                    if (alarm.isEnabled() && 
+                        ((alarm.getStandardHour() == displayHour && alarm.getStandardMin() == displayMin) ||
+                         (alarm.getFakeHour() == displayHour && alarm.getFakeMin() == displayMin))) {
+                        String customMessage = alarm.getCustomMessage();
+                        Log.d(TAG, "一致するアラームを発見: " + customMessage);
+                        return customMessage != null ? customMessage : "";
+                    }
+                }
+            }
+            
+            Log.d(TAG, "一致するアラームが見つかりません");
+            return "";
+        } catch (Exception e) {
+            Log.e(TAG, "カスタムメッセージの取得中にエラー", e);
+            return "";
         }
     }
 
@@ -288,9 +322,9 @@ public class Alarm_Stop extends AppCompatActivity
         
         stopAndRelease();
 
-        // 直接メイン画面に戻る
-        Intent intent = new Intent(Alarm_Stop.this, Main_Activity.class);
-        // 既存のMainActivityインスタンスを再利用
+        // アラーム一覧画面に戻る
+        Intent intent = new Intent(Alarm_Stop.this, AlarmListActivity.class);
+        // 既存のAlarmListActivityインスタンスを再利用
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish(); // 現在のアクティビティを終了

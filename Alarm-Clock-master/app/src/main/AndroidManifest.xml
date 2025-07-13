@@ -16,13 +16,21 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".Main_Activity"
+            android:name=".AlarmListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".Main_Activity"
+            android:exported="false" />
+        
+        <activity
+            android:name=".AlarmEditActivity"
+            android:exported="false" />
 
         <!-- 親アクティビティを指定 -->
         <activity

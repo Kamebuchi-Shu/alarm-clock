@@ -43,7 +43,7 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
     private boolean forceModeEnabled = false;
     private String customMessage = "";
     private boolean[] days = new boolean[7];
-    private boolean alarmEnabled = false;
+    private boolean alarmEnabled = true;  // デフォルトで有効に変更
     private boolean isNewAlarm = false;
 
     // 曜日用チェックボックス
@@ -122,10 +122,21 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
         forceModeEnabled = intent.getBooleanExtra("force_mode", false);
         selectedAudioName = intent.getStringExtra("audio_name");
         customMessage = intent.getStringExtra("custom_message");
-        alarmEnabled = intent.getBooleanExtra("enabled", false);
+        
+        // 新規アラーム追加時はデフォルトでON、編集時は既存の値を使用
+        if (isNewAlarm) {
+            alarmEnabled = true;
+        } else {
+            alarmEnabled = intent.getBooleanExtra("enabled", false);
+        }
         
         if (selectedAudioName == null) selectedAudioName = "デフォルト音声";
         if (customMessage == null) customMessage = "";
+        
+        // 新規アラーム追加時はカスタムメッセージを空文字列に設定
+        if (isNewAlarm) {
+            customMessage = "";
+        }
         
         boolean[] intentDays = intent.getBooleanArrayExtra("days");
         if (intentDays != null) {
@@ -305,7 +316,7 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
                 }
             }
             
-            // 結果をMain_Activityに返す
+            // 結果をAlarmListActivityに返す
             Intent resultIntent = new Intent();
             resultIntent.putExtra("alarm_id", alarmId);
             resultIntent.putExtra("position", position);

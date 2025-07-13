@@ -43,45 +43,12 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.set);
-
-        // 各ボタンのオブジェクト化
-        Button btnStandardTime = findViewById(R.id.standard_time);
-        Button btnFakeTime = findViewById(R.id.fake_time);
-        Switch forceModeSwitch = findViewById(R.id.force_mode_switch);
-
-        Button btnCheack = findViewById(R.id.cheack);
-        Button btnAudio = findViewById(R.id.audio_select);
-        Button btnDebug = findViewById(R.id.debug_button);
-        EditText customMessageEditText = findViewById(R.id.customMessageEditText);
-
-        // 各ボタンのクリックリスナー設定
-        btnStandardTime.setOnClickListener(this);
-        btnFakeTime.setOnClickListener(this);
-
-        btnCheack.setOnClickListener(this);
-        btnAudio.setOnClickListener(this);
-        btnDebug.setOnClickListener(this);
-
-        // 強制モードスイッチのリスナー設定
-        forceModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            forceModeEnabled = isChecked;
-            String text = isChecked ? getString(R.string.force_mode_on) : getString(R.string.force_mode_off);
-            forceModeSwitch.setText(text);
-            saveForceMode();
-        });
-
-        // 保存された音声名を読み込んで表示
-        loadSelectedAudioName();
         
-        // 保存された時間設定を読み込んで表示
-        loadTimeSettings();
-        
-        // カスタムメッセージの読み込みと設定
-        loadCustomMessage(customMessageEditText);
-        
-        // カスタムメッセージ入力の変更監視
-        setupCustomMessageListener(customMessageEditText);
+        // 新しいアラーム一覧画面にリダイレクト
+        Intent intent = new Intent(this, AlarmListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     // 保存された音声名を読み込む
