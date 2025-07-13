@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Calendar;
+
 
 public class Check_Activity extends AppCompatActivity {
 
@@ -39,55 +41,96 @@ public class Check_Activity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        // 新機能: 2つの時間とフォースモードを取得
-        standardHour = intent.getIntExtra(Main_Activity.STANDARD_HOUR_DATA, 0);
-        standardMin = intent.getIntExtra(Main_Activity.STANDARD_MIN_DATA, 0);
-        standardSec = intent.getIntExtra("standard_sec", 0); // 秒も取得
-        fakeHour = intent.getIntExtra(Main_Activity.FAKE_HOUR_DATA, 0);
-        fakeMin = intent.getIntExtra(Main_Activity.FAKE_MIN_DATA, 0);
-        fakeSec = intent.getIntExtra("fake_sec", 0); // 秒も取得
-        forceModeEnabled = intent.getBooleanExtra(Main_Activity.FORCE_MODE_DATA, false);
+        // --- 1. Main_Activityから渡された時間を取得 ---
+        int standardHour = intent.getIntExtra(Main_Activity.STANDARD_HOUR_DATA, 0);
+        int standardMin = intent.getIntExtra(Main_Activity.STANDARD_MIN_DATA, 0);
+        int standardSec = intent.getIntExtra("standard_sec", 0);
+        int fakeHour = intent.getIntExtra(Main_Activity.FAKE_HOUR_DATA, 0);
+        int fakeMin = intent.getIntExtra(Main_Activity.FAKE_MIN_DATA, 0);
+        int fakeSec = intent.getIntExtra("fake_sec", 0);
+
+        // --- 2. 規定時間とフェイク時間の間で、ランダムなアラーム時刻を計算 ---
+        Calendar standardCal = Calendar.getInstance();
+        standardCal.set(Calendar.HOUR_OF_DAY, standardHour);
+        standardCal.set(Calendar.MINUTE, standardMin);
+        standardCal.set(Calendar.SECOND, standardSec);
+
+        Calendar fakeCal = Calendar.getInstance();
+        fakeCal.set(Calendar.HOUR_OF_DAY, fakeHour);
+        fakeCal.set(Calendar.MINUTE, fakeMin);
+        fakeCal.set(Calendar.SECOND, fakeSec);
+
+        long startTime = Math.min(standardCal.getTimeInMillis(), fakeCal.getTimeInMillis());
+        long endTime = Math.max(standardCal.getTimeInMillis(), fakeCal.getTimeInMillis());
+        long randomTimeMillis = startTime + (long) (Math.random() * (endTime - startTime));
+
+        Calendar alarmTime = Calendar.getInstance();
+        alarmTime.setTimeInMillis(randomTimeMillis);
+
+        // 過去の時刻になった場合は翌日に設定
+        if (alarmTime.getTimeInMillis() <= System.currentTimeMillis()) {
+            alarmTime.add(Calendar.DAY_OF_YEAR, 1);
+        }
 
 
+        // --- 3. アラームを「1つだけ」セットする ---
+        Intent bootIntent = new Intent(Check_Activity.this, Alarm_Receiver.class);
+        // 表示用には「規定時刻」の情報を渡す
+        bootIntent.putExtra("displayHour", standardHour);
+        bootIntent.putExtra("displayMin", standardMin);
+        bootIntent.putExtra("displaySec", standardSec);
 
-        // UI要素の取得
+        int requestCode = 12345; // アラームは1つなので、リクエストコードは固定でOK
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(
+                Check_Activity.this,
+                requestCode,
+                bootIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        // Androidバージョンに応じてアラームを設定
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime.getTimeInMillis(), alarmIntent);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarm.setExact(AlarmManager.RTC_WAKEUP, alarmTime.getTimeInMillis(), alarmIntent);
+        } else {
+            alarm.set(AlarmManager.RTC_WAKEUP, alarmTime.getTimeInMillis(), alarmIntent);
+        }
+
+
+        // --- 4. 画面の表示を更新 ---
+        // UI要素を取得
         TextView standardTimeDisplay = findViewById(R.id.standard_time_display);
         TextView fakeTimeDisplay = findViewById(R.id.fake_time_display);
-        TextView forceModeStatus = findViewById(R.id.force_mode_status);
-        TextView probabilityInfo = findViewById(R.id.probability_info_display);
 
-        // 時間表示の更新
+        // 時間表示を更新（★ここで規定時刻とフェイク時刻が正しく表示されます）
         displayTime(standardTimeDisplay, standardHour, standardMin, standardSec);
         displayTime(fakeTimeDisplay, fakeHour, fakeMin, fakeSec);
 
-        // フォースモードの状態表示
-        String modeText = forceModeEnabled ? "ON (フェイクタイム100%)" : "OFF";
-        forceModeStatus.setText(modeText);
+        // 不要になった確率情報などは非表示にするか、文言を変更するとより分かりやすくなります
+        findViewById(R.id.force_mode_status).setVisibility(View.GONE);
+        findViewById(R.id.probability_info_display).setVisibility(View.GONE);
 
-        // 確率情報の表示
-        String probText = forceModeEnabled ? "フェイクタイム: 100%" : "規定時間: 30% / フェイクタイム: 70%";
-        probabilityInfo.setText(probText);
 
-        // 標準時間用のリクエストコード（規定時間用）
-        int standardRequestCode = standardHour * 1000 + standardMin;
-        // フェイクタイム用のリクエストコード（+10000で区別）
-        int fakeRequestCode = fakeHour * 1000 + fakeMin + 10000;
-
-        // 標準時間のアラーム設定
-        setupAlarm(standardHour, standardMin, standardSec, standardRequestCode, "standard");
-        
-        // フェイクタイムのアラーム設定
-        setupAlarm(fakeHour, fakeMin, fakeSec, fakeRequestCode, "fake");
-
-        Button btnReset = this.findViewById(R.id.reset);
+        // --- 5. リセットボタンの設定 ---
+        Button btnReset = findViewById(R.id.reset);
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 全てのアラームをキャンセル
-                cancelAllAlarms();
+                // 設定した1つのアラームをキャンセル
+                alarm.cancel(alarmIntent);
                 finish();
             }
         });
+
+        // --- デバッグ用のログ出力 ---
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPAN);
+        Log.d("AlarmDebug", "--- アラーム設定完了 ---");
+        Log.d("AlarmDebug", "規定時刻: " + standardHour + ":" + standardMin + ":" + standardSec);
+        Log.d("AlarmDebug", "フェイク時刻: " + fakeHour + ":" + fakeMin + ":" + fakeSec);
+        Log.d("AlarmDebug", "セットされたアラーム時刻: " + sdf.format(alarmTime.getTime()));
+        Log.d("AlarmDebug", "--------------------------");
     }
 
     // 時間を表示する共通メソッド
@@ -165,7 +208,7 @@ public class Check_Activity extends AppCompatActivity {
     // 全てのアラームをキャンセルする
     private void cancelAllAlarms() {
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        
+
         int standardRequestCode = standardHour * 1000 + standardMin;
         int fakeRequestCode = fakeHour * 1000 + fakeMin + 10000;
 
