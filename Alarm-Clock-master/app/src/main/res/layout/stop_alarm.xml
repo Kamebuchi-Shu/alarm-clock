@@ -35,44 +35,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="07:00:00"
-        android:textSize="56sp"
+        android:text="07:00"
+        android:textSize="120sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
-        android:background="#FFFFFF30"
         android:padding="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/alarm_message" />
-
-    <!-- アラーム情報 -->
-    <TextView
-        android:id="@+id/alarm_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="規定時間です"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:background="#00000050"
-        android:padding="12dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_display" />
-
-    <!-- デバッグ情報（開発用） -->
-    <TextView
-        android:id="@+id/debug_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Debug: 実際のアラーム情報"
-        android:textSize="12sp"
-        android:textColor="#FFFFFF80"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/alarm_info" />
 
     <!-- TimePickerを非表示にして位置を調整 -->
     <TimePicker
@@ -95,6 +65,6 @@
         android:textColor="#FF5722"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/debug_info" />
+        app:layout_constraintTop_toBottomOf="@+id/time_display" />
 
 </android.support.constraint.ConstraintLayout>

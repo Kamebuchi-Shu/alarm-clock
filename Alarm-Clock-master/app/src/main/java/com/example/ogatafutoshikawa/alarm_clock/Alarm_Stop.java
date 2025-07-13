@@ -67,24 +67,12 @@ public class Alarm_Stop extends AppCompatActivity
 
     @SuppressLint("SetTextI18n")
     private void initializeUI() {
-        // 時間表示（常に規定時間を表示）
+        // 時間表示（常に規定時間を表示）- 「時間」と「分」のみ
         TextView timeDisplay = findViewById(R.id.time_display);
-        String timeText = String.format("%02d:%02d:%02d", displayHour, displayMin, displaySec);
+        String timeText = String.format("%02d:%02d", displayHour, displayMin);
         timeDisplay.setText(timeText);
 
-        // アラーム情報表示
-        TextView alarmInfo = findViewById(R.id.alarm_info);
-        alarmInfo.setText("規定時間です"); // 常に規定時間と表示
-
-        // デバッグ情報表示
-        TextView debugInfo = findViewById(R.id.debug_info);
-        String debugText = String.format("実際: %s (%02d:%02d:%02d) | 強制: %s", 
-                actualAlarmType != null ? ("fake".equals(actualAlarmType) ? "フェイク" : "規定") : "不明",
-                actualHour, actualMin, actualSec,
-                forceModeEnabled ? "ON" : "OFF");
-        debugInfo.setText(debugText);
-
-        Log.d(TAG, "UI初期化完了 - " + debugText);
+        Log.d(TAG, "UI初期化完了 - 時間表示: " + timeText);
     }
 
     @Override
