@@ -24,7 +24,7 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
     private int min;
     private int sec; // 秒を追加
     private String timeType; // "standard" または "fake" を識別するフィールド
-    
+
     // NumberPicker用フィールド
     private NumberPicker hourPicker;
     private NumberPicker minutePicker;
@@ -50,7 +50,7 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
 
         Button btnSet = findViewById(R.id.set);
         Button btnCancel = findViewById(R.id.cancel);
-        
+
         // NumberPickerの初期化
         hourPicker = findViewById(R.id.hourPicker);
         minutePicker = findViewById(R.id.minutePicker);
@@ -58,7 +58,7 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
 
         btnSet.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
-        
+
         // NumberPickerの設定
         setupNumberPickers();
     }
@@ -69,17 +69,17 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
         hourPicker.setMinValue(0);
         hourPicker.setMaxValue(23);
         hourPicker.setValue(7); // デフォルト値
-        
+
         // 分（0-59）
         minutePicker.setMinValue(0);
         minutePicker.setMaxValue(59);
         minutePicker.setValue(0); // デフォルト値
-        
+
         // 秒（0-59）
         secondPicker.setMinValue(0);
         secondPicker.setMaxValue(59);
         secondPicker.setValue(0); // デフォルト値
-        
+
         // フォーマット設定（2桁表示）
         hourPicker.setFormatter(new NumberPicker.Formatter() {
             @Override
@@ -87,14 +87,14 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
                 return String.format("%02d", value);
             }
         });
-        
+
         minutePicker.setFormatter(new NumberPicker.Formatter() {
             @Override
             public String format(int value) {
                 return String.format("%02d", value);
             }
         });
-        
+
         secondPicker.setFormatter(new NumberPicker.Formatter() {
             @Override
             public String format(int value) {
@@ -102,8 +102,6 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
             }
         });
     }
-
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -139,7 +137,6 @@ public class Alarm_Activity extends AppCompatActivity implements View.OnClickLis
 
             // 音声設定を保存
             saveAlarmWithSound();
-
             bundle.putInt("hour", hour);
             bundle.putInt("min", min);
             bundle.putInt("sec", sec); // 秒も追加
