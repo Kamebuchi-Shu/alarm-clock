@@ -112,7 +112,6 @@ public class Check_Activity extends AppCompatActivity {
         findViewById(R.id.force_mode_status).setVisibility(View.GONE);
         findViewById(R.id.probability_info_display).setVisibility(View.GONE);
 
-
         // --- 5. リセットボタンの設定 ---
         Button btnReset = findViewById(R.id.reset);
         btnReset.setOnClickListener(new View.OnClickListener() {
