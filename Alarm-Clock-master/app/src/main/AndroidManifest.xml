@@ -39,6 +39,7 @@
         <activity android:name=".Check_Activity" />
         <activity android:name=".Alarm_Activity" />
         <activity android:name=".Alarm_Stop" />
+        <activity android:name=".DebugActivity" />
 
         <!-- レシーバーとサービス -->
         <receiver android:name=".Alarm_Receiver" />
