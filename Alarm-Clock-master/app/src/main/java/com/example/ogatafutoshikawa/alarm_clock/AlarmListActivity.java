@@ -242,13 +242,35 @@ public class AlarmListActivity extends AppCompatActivity {
                 alarmList.add(alarm);
                 sortAlarmList();
                 adapter.notifyDataSetChanged();
+                
+                // 新しいアラームが有効な場合はAlarmManagerに登録
+                if (alarm.isEnabled()) {
+                    registerAlarm(alarm);
+                    Log.d(TAG, "新しいアラーム " + alarm.getAlarmId() + " をAlarmManagerに登録");
+                }
+                
                 Log.d(TAG, "新しいアラームを追加: " + alarm.getAlarmId());
             } else if (requestCode == REQUEST_EDIT_ALARM) {
                 int position = data.getIntExtra("position", -1);
                 if (position >= 0 && position < alarmList.size()) {
+                    // 古いアラームを一旦解除
+                    AlarmData oldAlarm = alarmList.get(position);
+                    if (oldAlarm.isEnabled()) {
+                        unregisterAlarm(oldAlarm);
+                        Log.d(TAG, "編集前のアラーム " + oldAlarm.getAlarmId() + " を解除");
+                    }
+                    
+                    // 新しいアラームデータに更新
                     alarmList.set(position, alarm);
                     sortAlarmList();
                     adapter.notifyDataSetChanged();
+                    
+                    // 新しいアラームが有効な場合は登録
+                    if (alarm.isEnabled()) {
+                        registerAlarm(alarm);
+                        Log.d(TAG, "編集後のアラーム " + alarm.getAlarmId() + " をAlarmManagerに登録");
+                    }
+                    
                     Log.d(TAG, "アラームを更新: " + alarm.getAlarmId());
                 }
             }
