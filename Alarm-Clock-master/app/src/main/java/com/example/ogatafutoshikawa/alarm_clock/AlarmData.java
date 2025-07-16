@@ -15,6 +15,7 @@ public class AlarmData {
     private String audioName;
     private String customMessage;
     private boolean forceModeEnabled;
+    private int lateOffsetMinutes; // 遅刻表示オフセット時間（分）
 
     // コンストラクタ
     public AlarmData(int alarmId) {
@@ -30,6 +31,7 @@ public class AlarmData {
         this.audioName = "デフォルト音声";
         this.customMessage = "";
         this.forceModeEnabled = false;
+        this.lateOffsetMinutes = 15; // デフォルト15分
     }
 
     // ゲッター・セッター
@@ -145,4 +147,7 @@ public class AlarmData {
         }
         return false;
     }
+
+    public int getLateOffsetMinutes() { return lateOffsetMinutes; }
+    public void setLateOffsetMinutes(int lateOffsetMinutes) { this.lateOffsetMinutes = lateOffsetMinutes; }
 } 

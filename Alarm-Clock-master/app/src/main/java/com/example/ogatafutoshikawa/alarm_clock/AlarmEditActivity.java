@@ -45,6 +45,7 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
     private boolean[] days = new boolean[7];
     private boolean alarmEnabled = true;  // デフォルトで有効に変更
     private boolean isNewAlarm = false;
+    private int lateOffsetMinutes = 15; // 遅刻オフセット時間（分）
 
     // 曜日用チェックボックス
     private CheckBox[] dayCheckboxes = new CheckBox[7];
@@ -64,12 +65,13 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
             Button btnFakeTime = findViewById(R.id.fake_time);
             Switch forceModeSwitch = findViewById(R.id.force_mode_switch);
             Button btnAudio = findViewById(R.id.audio_select);
+            Button btnLateOffset = findViewById(R.id.late_offset_select);
             Button btnSave = findViewById(R.id.cheack); // 保存ボタンとして使用
             EditText customMessageEditText = findViewById(R.id.customMessageEditText);
 
             // nullチェック
             if (btnStandardTime == null || btnFakeTime == null || forceModeSwitch == null || 
-                btnAudio == null || btnSave == null || customMessageEditText == null) {
+                btnAudio == null || btnLateOffset == null || btnSave == null || customMessageEditText == null) {
                 Log.e("AlarmEditActivity", "必要なViewが見つかりません");
                 finish();
                 return;
@@ -79,6 +81,7 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
             btnStandardTime.setOnClickListener(this);
             btnFakeTime.setOnClickListener(this);
             btnAudio.setOnClickListener(this);
+            btnLateOffset.setOnClickListener(this);
             btnSave.setOnClickListener(this);
 
             // 保存ボタンのテキストを変更
@@ -120,6 +123,7 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
         fakeMin = intent.getIntExtra("fake_min", 45);
         fakeSec = intent.getIntExtra("fake_sec", 0);
         forceModeEnabled = intent.getBooleanExtra("force_mode", false);
+        lateOffsetMinutes = intent.getIntExtra("late_offset_minutes", 15);
         selectedAudioName = intent.getStringExtra("audio_name");
         customMessage = intent.getStringExtra("custom_message");
         
@@ -214,6 +218,9 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
             // 音声名を表示
             changeAudioName(selectedAudioName);
             
+            // 遅刻オフセット表示を更新
+            updateLateOffsetDisplay();
+            
             // 強制モードスイッチの状態を設定
             Switch forceModeSwitch = findViewById(R.id.force_mode_switch);
             if (forceModeSwitch != null) {
@@ -295,9 +302,43 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
         } else if (id == R.id.audio_select) {
             Intent intent = new Intent(this, AudioSelectActivity.class);
             startActivityForResult(intent, REQUEST_AUDIO);
+        } else if (id == R.id.late_offset_select) {
+            showLateOffsetDialog();
         } else if (id == R.id.cheack) {
             // 保存処理
             saveAlarmData();
+        }
+    }
+
+    private void showLateOffsetDialog() {
+        String[] offsetOptions = {"+5分", "+10分", "+15分", "+20分", "+30分"};
+        int[] offsetValues = {5, 10, 15, 20, 30};
+        
+        // 現在の値に対応するインデックスを見つける
+        int currentIndex = 2; // デフォルト15分
+        for (int i = 0; i < offsetValues.length; i++) {
+            if (offsetValues[i] == lateOffsetMinutes) {
+                currentIndex = i;
+                break;
+            }
+        }
+        
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("遅刻表示オフセット時間")
+               .setSingleChoiceItems(offsetOptions, currentIndex, 
+                   (dialog, which) -> {
+                       lateOffsetMinutes = offsetValues[which];
+                       updateLateOffsetDisplay();
+                       dialog.dismiss();
+                   })
+               .setNegativeButton("キャンセル", null)
+               .show();
+    }
+
+    private void updateLateOffsetDisplay() {
+        Button btnLateOffset = findViewById(R.id.late_offset_select);
+        if (btnLateOffset != null) {
+            btnLateOffset.setText("+" + lateOffsetMinutes + "分");
         }
     }
 
@@ -332,6 +373,7 @@ public class AlarmEditActivity extends AppCompatActivity implements View.OnClick
             resultIntent.putExtra("audio_name", selectedAudioName);
             resultIntent.putExtra("custom_message", customMessage);
             resultIntent.putExtra("force_mode", forceModeEnabled);
+            resultIntent.putExtra("late_offset_minutes", lateOffsetMinutes);
             
             setResult(RESULT_OK, resultIntent);
             

@@ -183,6 +183,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/audio_select" />
 
+    <!-- 遅刻オフセット設定セクション -->
+    <TextView
+        android:id="@+id/late_offset_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="遅刻表示オフセット時間"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/audio_name"/>
+
+    <!-- 遅刻オフセット選択ボタン -->
+    <Button
+        android:id="@+id/late_offset_select"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="+15分"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/late_offset_label"
+        android:layout_marginTop="16dp"/>
+
+    <!-- 遅刻オフセット説明 -->
+    <TextView
+        android:id="@+id/late_offset_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="30%の確率で表示される遅刻時間のオフセット"
+        android:textSize="12sp"
+        android:textColor="#666666"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/late_offset_select" />
+
     <!-- 曜日選択のプレースホルダー -->
     <View
         android:id="@+id/days_placeholder"
@@ -191,7 +228,7 @@
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/audio_name" />
+        app:layout_constraintTop_toBottomOf="@+id/late_offset_description" />
 
     <!-- カスタムメッセージ入力 -->
     <EditText

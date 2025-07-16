@@ -144,6 +144,7 @@ public class AlarmListActivity extends AppCompatActivity {
         intent.putExtra("audio_name", alarm.getAudioName());
         intent.putExtra("custom_message", alarm.getCustomMessage());
         intent.putExtra("force_mode", alarm.isForceModeEnabled());
+        intent.putExtra("late_offset_minutes", alarm.getLateOffsetMinutes());
         startActivityForResult(intent, REQUEST_EDIT_ALARM);
     }
     
@@ -294,6 +295,7 @@ public class AlarmListActivity extends AppCompatActivity {
         alarm.setAudioName(data.getStringExtra("audio_name"));
         alarm.setCustomMessage(data.getStringExtra("custom_message"));
         alarm.setForceModeEnabled(data.getBooleanExtra("force_mode", false));
+        alarm.setLateOffsetMinutes(data.getIntExtra("late_offset_minutes", 15));
         
         return alarm;
     }
@@ -342,6 +344,7 @@ public class AlarmListActivity extends AppCompatActivity {
         bootIntent.putExtra("fakeHour", alarm.getFakeHour());
         bootIntent.putExtra("fakeMin", alarm.getFakeMin());
         bootIntent.putExtra("forceModeEnabled", alarm.isForceModeEnabled());
+        bootIntent.putExtra("lateOffsetMinutes", alarm.getLateOffsetMinutes());
         
         // PendingIntentの作成
         PendingIntent alarmIntent = PendingIntent.getBroadcast(

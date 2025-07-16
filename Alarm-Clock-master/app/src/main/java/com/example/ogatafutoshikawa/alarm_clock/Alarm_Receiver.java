@@ -21,23 +21,49 @@ public class Alarm_Receiver extends BroadcastReceiver {
         int fakeHour = receivedIntent.getIntExtra("fakeHour", 0);
         int fakeMin = receivedIntent.getIntExtra("fakeMin", 0);
         boolean forceModeEnabled = receivedIntent.getBooleanExtra("forceModeEnabled", false);
+        int lateOffsetMinutes = receivedIntent.getIntExtra("lateOffsetMinutes", 15);
 
         Log.d(TAG, "受信データ - タイプ: " + alarmType + 
                    ", 規定時間: " + standardHour + ":" + standardMin + 
                    ", フェイクタイム: " + fakeHour + ":" + fakeMin + 
-                   ", 強制モード: " + forceModeEnabled);
+                   ", 強制モード: " + forceModeEnabled + 
+                   ", 遅刻オフセット: " + lateOffsetMinutes + "分");
 
         // 確率的分岐ロジック
         boolean shouldUseFakeTime = decideFakeTimeUsage(forceModeEnabled);
         
         Log.d(TAG, "決定結果: " + (shouldUseFakeTime ? "フェイクタイム" : "規定時間") + "を使用");
 
+        // 表示時間を決定
+        int displayHour, displayMin;
+        if (shouldUseFakeTime) {
+            // 70%パターン：フェイクタイム発動 → 規定時間表示
+            displayHour = standardHour;
+            displayMin = standardMin;
+        } else {
+            // 30%パターン：規定時間発動 → 遅刻時間表示
+            displayHour = standardHour;
+            displayMin = standardMin + lateOffsetMinutes;
+            // 60分を超える場合の時間調整
+            if (displayMin >= 60) {
+                displayHour++;
+                displayMin -= 60;
+                // 24時間を超える場合は0時に戻す
+                if (displayHour >= 24) {
+                    displayHour = 0;
+                }
+            }
+        }
+
+        Log.d(TAG, "表示時間: " + displayHour + ":" + displayMin + 
+                   " (オフセット: " + (shouldUseFakeTime ? "なし" : "+" + lateOffsetMinutes + "分") + ")");
+
         // アラーム停止画面を起動
         Intent alarmStopIntent = new Intent(context, Alarm_Stop.class);
         
-        // 常に規定時間を表示させるため、規定時間を渡す
-        alarmStopIntent.putExtra("displayHour", standardHour);
-        alarmStopIntent.putExtra("displayMin", standardMin);
+        // 決定した表示時間を渡す
+        alarmStopIntent.putExtra("displayHour", displayHour);
+        alarmStopIntent.putExtra("displayMin", displayMin);
         alarmStopIntent.putExtra("displaySec", 0); // 現状では秒は0で固定
         
         // どちらの時間が実際に使われたかの情報も渡す（デバッグ用）
