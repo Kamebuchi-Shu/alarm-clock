@@ -170,9 +170,6 @@ public class Main_Activity extends AppCompatActivity implements View.OnClickList
         } else if (id == R.id.audio_select) {
             Intent intent = new Intent(this, AudioSelectActivity.class);
             startActivityForResult(intent, REQUEST_AUDIO);
-        } else if (id == R.id.debug_button) {
-            Intent intent = new Intent(this, DebugActivity.class);
-            startActivity(intent);
         } else if (id == R.id.cheack) {
             if (standardHour < 100 && standardMin < 100 && standardSec < 100 && 
                 fakeHour < 100 && fakeMin < 100 && fakeSec < 100) {
